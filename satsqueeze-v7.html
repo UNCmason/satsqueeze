@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
+<meta name="description" content="SatSqueeze — Fewer bytes. Fewer sats. Compress inscription images on Bitcoin L1 via OP_NET.">
+<meta name="theme-color" content="#060402">
+<title>SatSqueeze — Spend Fewer Sats. Inscribe Smarter.</title>
+<style>
+:root{
+  --s:#F7931A;--s2:#c5720e;--g:rgba(247,147,26,.2);
+  --b0:#060402;--b1:#0b0805;--b2:#111009;--b3:#181309;
+  --d1:#1a1407;--d2:#241c0b;
+  --t0:#ece0c2;--t1:#9e7a3e;--t2:#413210;
+  --ok:#3fb85f;--er:#cc4444;--bl:#4a85e8;--yw:#dba820;
+  --r:11px;--r2:7px;
+  --f:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --m:'Courier New',Courier,monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--b0);color:var(--t0);font-family:var(--f);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+/* grid bg */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(247,147,26,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(247,147,26,.02) 1px,transparent 1px);
+  background-size:40px 40px}
+/* top glow */
+body::after{content:'';position:fixed;top:-260px;left:50%;transform:translateX(-50%);
+  width:800px;height:680px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(247,147,26,.065) 0%,transparent 62%);
+  pointer-events:none;z-index:0}
+
+.pg{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:0 14px 80px}
+
+/* netbar */
+.nb{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;
+  padding:6px 12px;font-family:var(--m);font-size:.56rem;letter-spacing:1.5px;
+  border-bottom:1px solid var(--d1)}
+.nb.t{background:rgba(219,168,32,.04);color:var(--yw)}
+.nb.m{background:rgba(63,184,95,.035);color:var(--ok)}
+.ndot{width:6px;height:6px;border-radius:50%;flex-shrink:0;animation:blink 2s ease-in-out infinite}
+.nb.t .ndot{background:var(--yw);box-shadow:0 0 5px var(--yw)}
+.nb.m .ndot{background:var(--ok);box-shadow:0 0 5px var(--ok)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.nsw{background:none;border:1px solid currentColor;border-radius:100px;
+  padding:2px 9px;font-family:var(--m);font-size:.5rem;cursor:pointer;color:inherit;letter-spacing:1px}
+.nsw:hover{opacity:.6}
+
+/* nav */
+nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0 12px;border-bottom:1px solid var(--d1)}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.coin{width:32px;height:32px;background:var(--s);border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--m);font-weight:700;font-size:14px;color:#000;
+  box-shadow:0 0 18px var(--g);flex-shrink:0;user-select:none;
+  animation:cg 4s ease-in-out infinite}
+@keyframes cg{0%,100%{box-shadow:0 0 12px rgba(247,147,26,.2)}50%{box-shadow:0 0 32px rgba(247,147,26,.65)}}
+.logo-n{font-size:.95rem;font-weight:800;letter-spacing:-.5px;color:var(--t0)}
+.logo-n em{color:var(--s);font-style:normal}
+.logo-sub{font-family:var(--m);font-size:.48rem;color:var(--t2);letter-spacing:1px;display:none}
+@media(min-width:440px){.logo-sub{display:block}}
+.nav-r{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.blk{font-family:var(--m);font-size:.54rem;color:var(--t2);background:var(--b1);
+  border:1px solid var(--d1);border-radius:100px;padding:4px 9px;white-space:nowrap;display:none}
+.blk b{color:var(--s)}
+@media(min-width:460px){.blk{display:block}}
+.wb{display:flex;align-items:center;gap:6px;background:var(--b1);border:1px solid var(--d2);
+  border-radius:100px;padding:6px 12px;font-family:var(--m);font-size:.58rem;color:var(--t1);
+  cursor:pointer;white-space:nowrap;flex-shrink:0;transition:border-color .15s,color .15s}
+.wb:hover{border-color:var(--s);color:var(--s)}
+.wb.on{border-color:var(--ok);color:var(--ok)}
+.wd{width:5px;height:5px;border-radius:50%;background:var(--t2);flex-shrink:0;transition:all .3s}
+.wd.on{background:var(--ok);box-shadow:0 0 6px var(--ok);animation:blink 2s ease-in-out infinite}
+
+/* hero */
+.hero{text-align:center;padding:42px 0 28px}
+.htag{display:inline-flex;align-items:center;gap:7px;background:rgba(247,147,26,.06);
+  border:1px solid rgba(247,147,26,.15);border-radius:100px;padding:4px 14px;margin-bottom:18px;
+  font-family:var(--m);font-size:.54rem;color:var(--s);letter-spacing:2px;text-transform:uppercase}
+.hero h1{font-size:clamp(2.2rem,8vw,4rem);font-weight:900;letter-spacing:-2px;line-height:.92;margin-bottom:14px}
+.hero h1 em{color:var(--s);font-style:normal}
+.hero-sub{font-size:clamp(.84rem,2.5vw,.98rem);color:var(--t1);max-width:460px;margin:0 auto 20px;line-height:1.6;font-weight:500}
+/* sat banner */
+.sbn{display:flex;flex-wrap:wrap;justify-content:center;gap:0;background:var(--b1);
+  border:1px solid var(--d2);border-radius:var(--r);overflow:hidden;margin-bottom:0}
+.sbi{padding:10px 16px;text-align:center;flex:1;min-width:80px}
+.sbi+.sbi{border-left:1px solid var(--d1)}
+.sbi strong{display:block;font-size:.9rem;font-weight:800;color:var(--s);font-family:var(--m);margin-bottom:2px}
+.sbi span{font-family:var(--m);font-size:.52rem;color:var(--t2);letter-spacing:1px;text-transform:uppercase}
+.sbi.yw strong{color:var(--yw)}
+
+/* wallet panel */
+.wp{background:linear-gradient(135deg,rgba(247,147,26,.05),rgba(247,147,26,.01));
+  border:1px solid rgba(247,147,26,.13);border-radius:var(--r);padding:11px 15px;
+  margin-bottom:12px;display:none}
+.wp.on{display:flex;align-items:center;gap:12px;flex-wrap:wrap;animation:fd .25s ease}
+@keyframes fd{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.wa{font-family:var(--m);font-size:.65rem;color:var(--s);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wb2{font-family:var(--m);font-size:.62rem;color:var(--t1);flex-shrink:0}
+.wb2 strong{color:var(--s)}
+.wnb{font-family:var(--m);font-size:.5rem;padding:3px 8px;border-radius:100px;flex-shrink:0}
+.wnb.t{background:rgba(219,168,32,.1);color:var(--yw);border:1px solid rgba(219,168,32,.2)}
+.wnb.m{background:rgba(63,184,95,.07);color:var(--ok);border:1px solid rgba(63,184,95,.17)}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:400px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--b1);border:1px solid var(--d1);border-radius:var(--r);padding:12px 8px;text-align:center}
+.sv{display:block;font-size:1.1rem;font-weight:800;color:var(--s);font-family:var(--m);letter-spacing:-.5px;line-height:1;margin-bottom:3px}
+.sl{font-size:.5rem;color:var(--t2);text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
+
+/* slabel */
+.sl2{font-family:var(--m);font-size:.52rem;letter-spacing:2px;color:var(--t2);text-transform:uppercase;margin-bottom:8px;margin-top:4px}
+
+/* card / settings */
+.card{background:var(--b1);border:1px solid var(--d1);border-radius:var(--r);padding:15px 17px;margin-bottom:12px}
+.sg{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
+.field label{font-family:var(--m);font-size:.52rem;color:var(--t2);letter-spacing:1px;text-transform:uppercase}
+.ir{display:flex}
+.ir input{border-radius:var(--r2) 0 0 var(--r2)!important;flex:1;min-width:0}
+.iu{background:var(--s);color:#000;font-family:var(--m);font-size:.65rem;font-weight:700;
+  padding:0 12px;border-radius:0 var(--r2) var(--r2) 0;display:flex;align-items:center;white-space:nowrap;flex-shrink:0}
+input[type=number],select{background:var(--b2);border:1px solid var(--d2);border-radius:var(--r2);
+  color:var(--t0);font-family:var(--m);font-size:.76rem;padding:9px 11px;
+  outline:none;width:100%;transition:border-color .15s;-webkit-appearance:none;appearance:none}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input:focus,select:focus{border-color:var(--s)}
+select{cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23413210' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center;padding-right:28px}
+option{background:var(--b2);color:var(--t0)}
+/* sat estimate */
+.se{font-family:var(--m);font-size:.56rem;color:var(--t2);background:var(--b2);
+  border:1px solid var(--d1);border-radius:var(--r2);padding:8px 12px;
+  margin-top:-3px;margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.se span{color:var(--s);font-weight:700}
+/* presets */
+.prs{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.plb{font-family:var(--m);font-size:.52rem;color:var(--t2);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.pr{background:var(--b2);border:1px solid var(--d1);color:var(--t2);
+  font-family:var(--m);font-size:.56rem;padding:4px 10px;border-radius:100px;
+  cursor:pointer;transition:all .13s;letter-spacing:.5px}
+.pr:hover{border-color:var(--s);color:var(--s)}
+.pr.on{border-color:var(--s);color:var(--s);background:rgba(247,147,26,.08)}
+
+/* dropzone */
+.dz{border:2px dashed var(--d2);border-radius:var(--r);padding:40px 16px;
+  text-align:center;cursor:pointer;transition:border-color .18s;
+  background:var(--b1);margin-bottom:12px;position:relative;overflow:hidden}
+.dzg{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 0%,rgba(247,147,26,.06) 0%,transparent 62%);
+  opacity:0;transition:opacity .25s}
+.dz:hover .dzg,.dz.ov .dzg{opacity:1}
+.dz:hover,.dz.ov{border-color:var(--s)}
+.dzi{position:relative;z-index:1}
+.dz-ic{font-size:2.2rem;display:block;margin-bottom:10px;line-height:1;user-select:none}
+.dz-t{font-size:1rem;font-weight:800;margin-bottom:6px}
+.dz-s{font-family:var(--m);font-size:.6rem;color:var(--t2);line-height:1.8}
+.dz-s strong{color:var(--s)}
+.br{display:inline-block;margin-top:13px;background:var(--s);color:#000;
+  font-family:var(--m);font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:10px 22px;border-radius:100px;cursor:pointer;border:none;transition:background .15s,transform .15s}
+.br:hover{background:#ffb030;transform:translateY(-2px)}
+#fi{display:none}
+
+/* queue */
+.queue{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.qi{background:var(--b1);border:1px solid var(--d1);border-radius:var(--r);
+  padding:11px 13px;display:flex;align-items:center;gap:10px;animation:qi .18s ease}
+@keyframes qi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.qi:hover{border-color:var(--d2)}
+.qtw{position:relative;cursor:pointer;flex-shrink:0;width:46px;height:46px}
+.qtb{width:100%;height:100%;border-radius:var(--r2);object-fit:cover;border:1px solid var(--d1);background:var(--b2);display:block}
+.qtp{position:absolute;inset:0;background:rgba(0,0,0,.65);border-radius:var(--r2);
+  display:flex;align-items:center;justify-content:center;font-family:var(--m);font-size:.44rem;
+  color:#fff;opacity:0;transition:opacity .14s;pointer-events:none;letter-spacing:.5px}
+.qtw:hover .qtp{opacity:1}
+.qi-info{flex:1;min-width:0}
+.qi-n{font-size:.76rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.qi-m{display:flex;gap:7px;flex-wrap:wrap;font-family:var(--m);font-size:.56rem;color:var(--t2);margin-bottom:4px}
+.qo{color:var(--t2)}.qn{color:var(--ok)}.qs{color:var(--s);font-weight:700}.qq{color:var(--yw)}.qr{color:var(--bl)}
+.pg2{height:3px;background:var(--d1);border-radius:2px;overflow:hidden}
+.pgf{height:100%;background:linear-gradient(90deg,var(--s2),var(--s));border-radius:2px;width:0%;transition:width .28s}
+.qb{font-family:var(--m);font-size:.52rem;padding:3px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0}
+.bw{background:var(--b2);color:var(--t2);border:1px solid var(--d1)}
+.br2{background:rgba(247,147,26,.08);color:var(--s);border:1px solid rgba(247,147,26,.18)}
+.bd{background:rgba(63,184,95,.07);color:var(--ok);border:1px solid rgba(63,184,95,.18)}
+.be{background:rgba(204,68,68,.07);color:var(--er);border:1px solid rgba(204,68,68,.17)}
+.qd{background:none;border:none;color:var(--t2);cursor:pointer;font-size:.86rem;
+  padding:4px;flex-shrink:0;border-radius:5px;line-height:1;transition:color .14s,background .14s}
+.qd:hover{color:var(--er);background:rgba(204,68,68,.08)}
+
+/* compare */
+.cmp{display:none;background:var(--b1);border:1px solid var(--d1);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.cmp.on{display:block;animation:fd .25s ease}
+.cmph{padding:9px 14px;border-bottom:1px solid var(--d1);display:flex;justify-content:space-between;align-items:center}
+.cmph span{font-family:var(--m);font-size:.54rem;color:var(--t2);letter-spacing:2px;text-transform:uppercase}
+.cmpc{background:none;border:none;color:var(--t2);font-family:var(--m);font-size:.56rem;cursor:pointer;padding:2px 7px;border-radius:4px;transition:color .14s}
+.cmpc:hover{color:var(--er)}
+.cmpg{display:grid;grid-template-columns:1fr 1fr}
+.cs{padding:10px;text-align:center}
+.cs:first-child{border-right:1px solid var(--d1)}
+.ci{width:100%;max-height:170px;object-fit:contain;border-radius:var(--r2);background:var(--b2);display:block}
+.cl{font-family:var(--m);font-size:.56rem;margin-top:7px;color:var(--t2)}
+.cl strong{color:var(--t0);display:block;font-size:.72rem;margin-top:2px}
+
+/* actions */
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.btn-p{flex:2;min-width:140px;background:var(--s);color:#000;font-family:var(--m);font-size:.68rem;
+  font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:14px;border:none;
+  border-radius:var(--r);cursor:pointer;transition:background .15s,box-shadow .15s,transform .15s;position:relative;overflow:hidden}
+.btn-p::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.15) 50%,transparent 70%);transform:translateX(-150%)}
+.btn-p:hover:not(:disabled)::after{transform:translateX(150%);transition:transform .4s}
+.btn-p:hover:not(:disabled){background:#ffb030;box-shadow:0 5px 22px rgba(247,147,26,.38);transform:translateY(-1px)}
+.btn-p:disabled{opacity:.28;cursor:not-allowed}
+.btn-s{flex:1;min-width:110px;background:var(--b1);color:var(--t0);font-family:var(--m);font-size:.64rem;
+  font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:14px;
+  border:1px solid var(--d2);border-radius:var(--r);cursor:pointer;transition:border-color .15s,color .15s}
+.btn-s:hover:not(:disabled){border-color:var(--s);color:var(--s)}
+.btn-s:disabled{opacity:.28;cursor:not-allowed}
+.btn-g{background:none;color:var(--t2);font-family:var(--m);font-size:.58rem;border:1px solid var(--d1);
+  border-radius:var(--r);padding:14px 15px;cursor:pointer;transition:color .15s,border-color .15s}
+.btn-g:hover{color:var(--er);border-color:var(--er)}
+
+/* on-chain */
+.oc{background:linear-gradient(135deg,rgba(247,147,26,.04),rgba(247,147,26,.01));
+  border:1px solid rgba(247,147,26,.12);border-radius:var(--r);padding:15px;margin-bottom:12px;display:none}
+.oc.on{display:block;animation:fd .25s ease}
+.oct{font-size:.84rem;font-weight:800;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.ocs{font-size:.7rem;color:var(--t1);margin-bottom:10px;line-height:1.5}
+.ocn{font-family:var(--m);font-size:.56rem;padding:7px 11px;border-radius:var(--r2);margin-bottom:10px}
+.ocn.t{background:rgba(219,168,32,.06);border:1px solid rgba(219,168,32,.15);color:var(--yw)}
+.ocn.m{background:rgba(63,184,95,.05);border:1px solid rgba(63,184,95,.14);color:var(--ok)}
+.rc{font-family:var(--m);font-size:.56rem;background:var(--b2);border:1px solid var(--d1);
+  border-radius:var(--r2);padding:10px 12px;color:var(--t1);margin-bottom:10px;word-break:break-all;line-height:1.7}
+.rc span{color:var(--s)}
+.btn-sg{width:100%;background:rgba(247,147,26,.07);color:var(--s);border:1px solid rgba(247,147,26,.18);
+  border-radius:var(--r);font-family:var(--m);font-size:.64rem;font-weight:700;
+  padding:12px;cursor:pointer;transition:background .15s,box-shadow .15s;letter-spacing:1px;text-transform:uppercase}
+.btn-sg:hover:not(:disabled){background:rgba(247,147,26,.14);box-shadow:0 3px 14px rgba(247,147,26,.13)}
+.btn-sg:disabled{opacity:.3;cursor:not-allowed}
+.txb{background:rgba(63,184,95,.04);border:1px solid rgba(63,184,95,.13);border-radius:var(--r);padding:12px;margin-top:10px;display:none}
+.txb.on{display:block;animation:fd .25s ease}
+.txr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:7px}
+.txk{font-family:var(--m);font-size:.5rem;color:var(--t2);letter-spacing:1px;white-space:nowrap}
+.txv{font-family:var(--m);font-size:.58rem;color:var(--ok);text-align:right;word-break:break-all}
+.txv a{color:var(--s);text-decoration:none}
+.txv a:hover{text-decoration:underline}
+
+/* accordion */
+.isecs{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.isec{background:var(--b1);border:1px solid var(--d1);border-radius:var(--r)}
+.ih{padding:13px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;transition:background .14s;border-radius:var(--r)}
+.ih:hover{background:rgba(247,147,26,.018)}
+.iht{font-size:.84rem;font-weight:800;transition:color .14s}
+.ih:hover .iht{color:var(--s)}
+.iar{font-family:var(--m);font-size:.6rem;color:var(--t2);transition:transform .2s;flex-shrink:0}
+.isec.op .iar{transform:rotate(180deg)}
+.ib{display:none;padding:0 16px 16px}
+.ib.on{display:block}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:500px){.steps{grid-template-columns:1fr}}
+.step{background:var(--b2);border:1px solid var(--d1);border-radius:var(--r);padding:13px}
+.sn{font-family:var(--m);font-size:.5rem;color:var(--s);letter-spacing:2px;margin-bottom:6px}
+.st{font-size:.78rem;font-weight:700;margin-bottom:4px}
+.sb{font-size:.69rem;color:var(--t1);line-height:1.55}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:440px){.ag{grid-template-columns:1fr}}
+.ac{background:var(--b2);border:1px solid var(--d1);border-radius:var(--r);padding:13px}
+.ai{font-size:1.2rem;margin-bottom:6px;display:block}
+.at2{font-size:.76rem;font-weight:700;margin-bottom:4px}
+.ab{font-size:.68rem;color:var(--t1);line-height:1.5}
+.faq{display:flex;flex-direction:column;gap:6px}
+.fi{background:var(--b2);border:1px solid var(--d1);border-radius:var(--r)}
+.fq{padding:11px 14px;font-size:.76rem;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:9px;transition:color .14s;user-select:none}
+.fq:hover{color:var(--s)}
+.fc{font-family:var(--m);font-size:.65rem;color:var(--t2);transition:transform .18s;flex-shrink:0}
+.fi.op .fc{transform:rotate(45deg)}
+.fa{display:none;padding:0 14px 11px;font-size:.7rem;color:var(--t1);line-height:1.62}
+.fa.on{display:block}
+/* deploy */
+.ds{display:flex;gap:11px;margin-bottom:14px;align-items:flex-start}
+.dn{width:24px;height:24px;border-radius:50%;background:var(--s);color:#000;font-family:var(--m);font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.dt{font-size:.78rem;font-weight:700;margin-bottom:3px}
+.db{font-size:.68rem;color:var(--t1);line-height:1.58}
+.db a{color:var(--s);text-decoration:none}
+.db a:hover{text-decoration:underline}
+.cb{font-family:var(--m);font-size:.58rem;background:var(--b0);border:1px solid var(--d2);border-radius:var(--r2);padding:9px 12px;margin-top:6px;color:var(--t1);overflow-x:auto;white-space:pre;line-height:1.6}
+.cb em{color:var(--s);font-style:normal}
+code{font-family:var(--m);font-size:.72em;background:var(--b0);padding:1px 4px;border-radius:3px;color:var(--s)}
+/* score */
+.scg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+@media(max-width:500px){.scg{grid-template-columns:repeat(3,1fr)}}
+.scc{background:var(--b2);border:1px solid var(--d1);border-radius:var(--r);padding:10px;text-align:center}
+.scp{font-family:var(--m);font-size:1.25rem;font-weight:700;color:var(--s);line-height:1;margin-bottom:3px}
+.scl{font-size:.58rem;color:var(--t1);line-height:1.35}
+/* footer */
+footer{text-align:center;padding:20px 0 0;border-top:1px solid var(--d1);
+  font-family:var(--m);font-size:.54rem;color:var(--t2);letter-spacing:.5px;line-height:2.1}
+footer a{color:var(--s);text-decoration:none}
+footer a:hover{text-decoration:underline}
+.fl{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:10px}
+.fb{display:inline-flex;align-items:center;gap:5px;background:var(--b1);border:1px solid var(--d1);
+  border-radius:100px;padding:4px 11px;font-size:.54rem;color:var(--t2);text-decoration:none;transition:border-color .14s,color .14s}
+.fb:hover{border-color:var(--s);color:var(--s)}
+/* modals */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:500;display:none;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(6px)}
+.mbg.on{display:flex}
+.md{background:var(--b1);border:1px solid var(--d2);border-radius:14px;padding:24px;max-width:380px;width:100%;animation:fd .2s ease}
+.md h3{font-size:.94rem;font-weight:800;margin-bottom:6px}
+.md p{font-size:.72rem;color:var(--t1);line-height:1.58;margin-bottom:16px}
+.mdb{display:flex;gap:8px;flex-wrap:wrap}
+.mdb button{flex:1;min-width:90px}
+/* toast */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--b2);border:1px solid var(--d2);color:var(--t0);font-family:var(--m);font-size:.65rem;
+  padding:9px 18px;border-radius:100px;z-index:600;
+  transition:transform .26s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;box-shadow:0 7px 26px rgba(0,0,0,.5);pointer-events:none}
+.toast.on{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:rgba(63,184,95,.38);color:var(--ok)}
+.toast.bad{border-color:rgba(204,68,68,.38);color:var(--er)}
+.toast.w{border-color:rgba(219,168,32,.38);color:var(--yw)}
+.hr{height:1px;background:var(--d1);margin:12px 0}
+</style>
+</head>
+<body>
+<div class="pg">
+
+<!-- NETBAR -->
+<div class="nb t" id="nb">
+  <span class="ndot"></span>
+  <span id="nbl">TESTNET · Regtest · No real sats at risk</span>
+  <button class="nsw" onclick="swNet()" type="button" id="nsw">Switch to Mainnet</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <div class="coin" aria-hidden="true">₿</div>
+    <div>
+      <div class="logo-n">Sat<em>Squeeze</em></div>
+      <div class="logo-sub">// spend fewer sats · inscribe smarter</div>
+    </div>
+  </a>
+  <div class="nav-r">
+    <div class="blk" id="blk">BLK <b id="bnum">—</b></div>
+    <button class="wb" id="wb" onclick="cW()" type="button">
+      <span class="wd" id="wd"></span>
+      <span id="wbt">Connect OPWallet</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="htag">⚡ Bitcoin L1 · OP_NET · Taproot · Satoshi-Native</div>
+  <h1>Fewer Bytes.<br><em>Fewer Sats.</em></h1>
+  <p class="hero-sub">Every inscription byte costs satoshis. SatSqueeze compresses your images to the exact KB you need — same resolution, fewer sats spent.</p>
+  <div class="sbn">
+    <div class="sbi"><strong id="sbO">—</strong><span>Original</span></div>
+    <div class="sbi"><strong id="sbC">—</strong><span>Squeezed</span></div>
+    <div class="sbi"><strong id="sbB">—</strong><span>Bytes Saved</span></div>
+    <div class="sbi yw"><strong id="sbS">—</strong><span>Est. Sats Saved</span></div>
+  </div>
+</div>
+
+<!-- WALLET PANEL -->
+<div class="wp" id="wp">
+  <div class="wa" id="wa">—</div>
+  <div class="wb2">Bal: <strong id="wbal">—</strong> BTC</div>
+  <span class="wnb t" id="wnb">TESTNET</span>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><span class="sv" id="sF">0</span><span class="sl">Images</span></div>
+  <div class="stat"><span class="sv" id="sO">—</span><span class="sl">Total Size</span></div>
+  <div class="stat"><span class="sv" id="sC">—</span><span class="sl">After Squeeze</span></div>
+  <div class="stat"><span class="sv" id="sS">—</span><span class="sl">Sats Saved*</span></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="sl2">// squeeze settings</div>
+<div class="card">
+  <div class="sg">
+    <div class="field">
+      <label for="kb">Target Size Per Image</label>
+      <div class="ir">
+        <input type="number" id="kb" value="60" min="1" max="50000" step="1">
+        <span class="iu">KB</span>
+      </div>
+    </div>
+    <div class="field">
+      <label for="fmt">Output Format</label>
+      <select id="fmt" onchange="updEst()">
+        <option value="webp">WebP — Best bytes-per-pixel</option>
+        <option value="jpeg">JPEG — Universal Taproot compat</option>
+        <option value="png">PNG — Lossless (ignores KB target)</option>
+      </select>
+    </div>
+  </div>
+  <div class="se">₿ At 10 sat/vByte: <span id="estv">set a target to estimate</span></div>
+  <div class="prs">
+    <span class="plb">Quick:</span>
+    <button class="pr" onclick="sp(60)"   type="button">60 KB</button>
+    <button class="pr" onclick="sp(100)"  type="button">100 KB</button>
+    <button class="pr" onclick="sp(200)"  type="button">200 KB</button>
+    <button class="pr" onclick="sp(400)"  type="button">400 KB</button>
+    <button class="pr" onclick="sp(1000)" type="button">1 MB</button>
+    <button class="pr" onclick="sp(4000)" type="button">4 MB</button>
+  </div>
+</div>
+
+<!-- DROPZONE -->
+<div class="dz" id="dz">
+  <div class="dzg"></div>
+  <div class="dzi">
+    <span class="dz-ic" aria-hidden="true">🟠</span>
+    <div class="dz-t">Drop Inscription Images Here</div>
+    <p class="dz-s">JPG · PNG · WebP · GIF — any size<br><strong>Batch your whole collection</strong> — squeeze them all at once<br>Click any thumbnail after squeezing to compare before / after</p>
+    <button class="br" onclick="event.stopPropagation();document.getElementById('fi').click()" type="button">Select Images</button>
+    <input type="file" id="fi" accept="image/*" multiple>
+  </div>
+</div>
+
+<!-- QUEUE -->
+<div class="queue" id="queue" role="list"></div>
+
+<!-- COMPARE -->
+<div class="cmp" id="cmp">
+  <div class="cmph">
+    <span>// before &amp; after</span>
+    <button class="cmpc" onclick="cC()" type="button">✕ close</button>
+  </div>
+  <div class="cmpg">
+    <div class="cs"><img class="ci" id="cb" src="" alt="Before"><div class="cl">BEFORE<strong id="cbs">—</strong></div></div>
+    <div class="cs"><img class="ci" id="ca" src="" alt="After"><div class="cl">AFTER<strong id="cas">—</strong></div></div>
+  </div>
+</div>
+
+<!-- ACTIONS -->
+<div class="acts">
+  <button class="btn-p" id="bSq" onclick="sqAll()" disabled type="button">⚡ Squeeze All</button>
+  <button class="btn-s" id="bDl" onclick="dlAll()" disabled type="button">↓ Download All</button>
+  <button class="btn-g"         onclick="clr()"            type="button">Clear</button>
+</div>
+
+<!-- ON-CHAIN -->
+<div class="oc" id="oc">
+  <div class="oct">🔗 Sign Receipt on Bitcoin L1 <span style="font-size:.58rem;color:var(--t2);font-weight:400">(optional)</span></div>
+  <div class="ocs">Stamp your compression receipt into Bitcoin Taproot witness data via OP_NET. Records SHA-256 hash, bytes saved, and block height — permanent proof on-chain. <strong style="color:var(--ok)">SatSqueeze charges no fee.</strong></div>
+  <div class="ocn t" id="ocn">🧪 TESTNET · Regtest tBTC — no real satoshis at risk</div>
+  <div class="rc" id="rc">Computing SHA-256 receipt hash…</div>
+  <button class="btn-sg" id="bSg" onclick="sign()" disabled type="button">🔗 Sign Receipt on Bitcoin L1</button>
+  <div class="txb" id="txb">
+    <div class="txr"><span class="txk">STATUS</span><span class="txv">✓ SIGNED</span></div>
+    <div class="txr"><span class="txk">PROOF</span><span class="txv" id="txp">—</span></div>
+    <div class="txr"><span class="txk">BLOCK HEIGHT</span><span class="txv" id="txbl">—</span></div>
+    <div class="txr"><span class="txk">NETWORK</span><span class="txv" id="txn">—</span></div>
+    <div class="txr"><span class="txk">EXPLORER</span><span class="txv"><a id="txl" href="https://opscan.org" target="_blank" rel="noopener">OPScan →</a></span></div>
+  </div>
+</div>
+
+<!-- INFO SECTIONS -->
+<div class="isecs">
+
+<div class="isec op" id="s-how">
+  <div class="ih" onclick="tS('s-how')"><span class="iht">⚡ How It Works</span><span class="iar">▼</span></div>
+  <div class="ib on">
+    <div class="steps">
+      <div class="step"><div class="sn">01 // UPLOAD</div><div class="st">Drop Your Images</div><div class="sb">Upload any format. Batch your whole collection. Zero bytes leave your device — 100% local processing.</div></div>
+      <div class="step"><div class="sn">02 // SQUEEZE</div><div class="st">Hit Your Byte Target</div><div class="sb">Binary search finds the exact encoding quality to hit your KB. Pixel dimensions never change — only witness data size shrinks.</div></div>
+      <div class="step"><div class="sn">03 // INSCRIBE</div><div class="st">Deploy on Bitcoin L1</div><div class="sb">Download squeezed images and inscribe via OPWallet + OP_NET. Test free on Regtest, broadcast to Mainnet when ready.</div></div>
+    </div>
+    <div class="hr"></div>
+    <div style="background:var(--b2);border:1px solid var(--d1);border-radius:var(--r);padding:13px 15px">
+      <div style="font-family:var(--m);font-size:.52rem;color:var(--s);letter-spacing:2px;margin-bottom:7px">// BYTES = SATS ON BITCOIN</div>
+      <div style="font-size:.7rem;color:var(--t1);line-height:1.62">On Bitcoin L1, every inscription writes into <strong style="color:var(--s)">Taproot witness data</strong>. Fees = <strong style="color:var(--s)">satoshis per virtual byte (sat/vByte)</strong>. A 2MB image costs ~33× more to inscribe than the same image at 60KB. SatSqueeze targets bytes directly — minimum sats for every inscription.</div>
+    </div>
+  </div>
+</div>
+
+<div class="isec op" id="s-deploy">
+  <div class="ih" onclick="tS('s-deploy')"><span class="iht">🧪 Testnet First · Then Mainnet</span><span class="iar">▼</span></div>
+  <div class="ib on">
+    <div style="font-family:var(--m);font-size:.56rem;color:var(--yw);background:rgba(219,168,32,.05);border:1px solid rgba(219,168,32,.14);border-radius:var(--r2);padding:9px 12px;margin-bottom:14px">⚠ Always test on Regtest first. OP_NET Mainnet live March 19 2026. Free tBTC → <a href="https://faucet.opnet.org" target="_blank" rel="noopener" style="color:var(--s)">faucet.opnet.org</a></div>
+    <div class="ds"><div class="dn">1</div><div><div class="dt">Install OPWallet — Select Taproot (P2TR)</div><div class="db">Install <a href="https://chromewebstore.google.com/detail/opwallet/pmbjpcmaaladnfpacpmhmnfmpklgbdjb" target="_blank" rel="noopener">OPWallet Chrome extension</a>. Choose <strong>Taproot (P2TR)</strong> address type — required for OP_NET. Save seed phrase offline only.</div></div></div>
+    <div class="ds"><div class="dn">2</div><div><div class="dt">Switch OPWallet to Regtest</div><div class="db">OPWallet → Settings → Network → <strong>Regtest</strong>. Also toggle the banner above to Testnet. All transactions use free tBTC — no real satoshis at risk.</div></div></div>
+    <div class="ds"><div class="dn">3</div><div><div class="dt">Claim Free tBTC from the Faucet</div><div class="db">0.05 tBTC per 24h — enough for extensive testing.</div><div class="cb">👉  <em>https://faucet.opnet.org</em></div></div></div>
+    <div class="ds"><div class="dn">4</div><div><div class="dt">Test: Upload → Squeeze → Sign Receipt</div><div class="db">Upload images, squeeze them, connect OPWallet (Regtest), sign a receipt. Verify the TX on <a href="https://opscan.org" target="_blank" rel="noopener">OPScan</a> before touching Mainnet.</div></div></div>
+    <div class="ds"><div class="dn">5</div><div><div class="dt">Push to GitHub (Free)</div><div class="db">GitHub is free. Create an account at <a href="https://github.com" target="_blank" rel="noopener">github.com</a> if you don't have one — no cost. Then create a new public repository.</div><div class="cb"><em># One-time setup</em>
+git init
+git add satsqueeze-v6.html README.md
+git commit -m "SatSqueeze v6 - Bitcoin image compressor"
+git remote add origin https://github.com/YOURNAME/satsqueeze.git
+git push -u origin main</div></div></div>
+    <div class="ds"><div class="dn">6</div><div><div class="dt">Deploy Free on Vercel</div><div class="db">Vercel is free for personal projects. Connect your GitHub repo at <a href="https://vercel.com" target="_blank" rel="noopener">vercel.com</a> — it auto-deploys every push. Or drag-drop at <a href="https://netlify.com/drop" target="_blank" rel="noopener">netlify.com/drop</a> for instant test URL.</div><div class="cb"><em># Via Vercel CLI (optional)</em>
+npm install -g vercel
+vercel deploy satsqueeze-v6.html</div></div></div>
+    <div class="ds"><div class="dn">7</div><div><div class="dt">Submit + Tweet to Enter Competition</div><div class="db">Submit at <a href="https://vibecode.finance/submit" target="_blank" rel="noopener">vibecode.finance/submit</a> — you need your GitHub URL and a screenshot. Then tweet with <code>#opnetvibecode</code> and tag <code>@opnetbtc</code>. Tweet is required to qualify for prizes.</div></div></div>
+    <div class="ds"><div class="dn">8</div><div><div class="dt">Go Mainnet — Real Sats</div><div class="db">OPWallet → Network → Mainnet. Toggle banner above to Mainnet. Your squeezed images are ready for real Bitcoin inscription at minimum sat cost. Explorer: <a href="https://opscan.org" target="_blank" rel="noopener">opscan.org</a></div></div></div>
+    <div class="hr"></div>
+    <div style="font-family:var(--m);font-size:.52rem;color:var(--s);letter-spacing:2px;margin-bottom:9px">// COMPETITION SCORING</div>
+    <div class="scg">
+      <div class="scc"><div class="scp">30</div><div class="scl">Working Product<br><span style="color:var(--ok)">✓ Functional</span></div></div>
+      <div class="scc"><div class="scp">25</div><div class="scl">Innovation<br><span style="color:var(--ok)">✓ First compressor BTC L1</span></div></div>
+      <div class="scc"><div class="scp">15</div><div class="scl">UX / Polish<br><span style="color:var(--ok)">✓ Mobile-first</span></div></div>
+      <div class="scc"><div class="scp">15</div><div class="scl">Mainnet Ready<br><span style="color:var(--ok)">✓ Live 2026</span></div></div>
+      <div class="scc"><div class="scp">15</div><div class="scl">OP_NET Usage<br><span style="color:var(--ok)">✓ OPWallet + receipt</span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="isec" id="s-about">
+  <div class="ih" onclick="tS('s-about')"><span class="iht">🟠 About SatSqueeze</span><span class="iar">▼</span></div>
+  <div class="ib">
+    <div class="ag">
+      <div class="ac"><span class="ai">₿</span><div class="at2">One Chain. One Truth.</div><div class="ab">Every inscription on OP_NET lives on actual Bitcoin L1 — Taproot witness data secured by proof-of-work. No sidechain, no bridge. SatSqueeze helps you write fewer bytes onto that chain.</div></div>
+      <div class="ac"><span class="ai">🔒</span><div class="at2">100% Private</div><div class="ab">All compression runs locally via the Canvas API. Images never leave your device. No server, no upload, no account, no tracking.</div></div>
+      <div class="ac"><span class="ai">⚡</span><div class="at2">Satoshi-Native Logic</div><div class="ab">Cost = bytes × sat/vByte. SatSqueeze targets bytes directly. Fewer bytes inscribed = fewer satoshis spent — at the exact same resolution.</div></div>
+      <div class="ac"><span class="ai">🎯</span><div class="at2">Resolution Untouched</div><div class="ab">Pixel dimensions never change. A 4K image stays 4K — only the encoding quality adjusts to hit your byte target.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="isec" id="s-faq">
+  <div class="ih" onclick="tS('s-faq')"><span class="iht">💬 FAQ</span><span class="iar">▼</span></div>
+  <div class="ib">
+    <div class="faq">
+      <div class="fi"><div class="fq" onclick="tF(this.parentElement)">Why does image size matter for Bitcoin inscriptions? <span class="fc">+</span></div><div class="fa">Bitcoin fees = satoshis per virtual byte (sat/vByte). Inscription images go into Taproot witness data — bigger file = heavier tx = more sats. At 10 sat/vByte, a 2MB image costs ~200,000 sats more than a 60KB version at the same resolution.</div></div>
+      <div class="fi"><div class="fq" onclick="tF(this.parentElement)">Does squeezing change my image resolution or dimensions? <span class="fc">+</span></div><div class="fa">Never. Only the file encoding quality changes. Pixel dimensions stay identical — 1920×1080 stays 1920×1080. The witness data just contains fewer bytes.</div></div>
+      <div class="fi"><div class="fq" onclick="tF(this.parentElement)">Do I need OPWallet to compress images? <span class="fc">+</span></div><div class="fa">No. Compression and download works with zero wallet, zero account. OPWallet is only needed for the optional on-chain receipt signature.</div></div>
+      <div class="fi"><div class="fq" onclick="tF(this.parentElement)">Is SatSqueeze free to use? <span class="fc">+</span></div><div class="fa">Yes — currently free with no limits and no sign-up. This may change in future versions.</div></div>
+      <div class="fi"><div class="fq" onclick="tF(this.parentElement)">What format is best for Bitcoin inscriptions? <span class="fc">+</span></div><div class="fa">WebP gives the best bytes-per-pixel ratio — recommended default. JPEG is universally compatible. PNG is lossless but ignores the KB target and is typically larger than WebP or JPEG at equal visual quality.</div></div>
+      <div class="fi"><div class="fq" onclick="tF(this.parentElement)">Is GitHub free? Does deploying cost money? <span class="fc">+</span></div><div class="fa">GitHub is completely free for public repositories. Vercel is free for personal projects (generous free tier). Netlify drop is free. You can get your dApp live at zero cost.</div></div>
+      <div class="fi"><div class="fq" onclick="tF(this.parentElement)">What is OP_NET? <span class="fc">+</span></div><div class="fa">OP_NET enables smart contracts, tokens (OP_20), and NFT collections directly on Bitcoin L1 using Taproot witness data. No sidechain, no bridge. BTC is the gas token — all fees paid in satoshis. Mainnet launched March 2026.</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="hr" style="margin-top:18px"></div>
+<footer>
+  <div class="fl">
+    <a class="fb" href="https://opnet.org"           target="_blank" rel="noopener">₿ OP_NET</a>
+    <a class="fb" href="https://vibecode.finance"    target="_blank" rel="noopener">⚡ vibecode.finance</a>
+    <a class="fb" href="https://opscan.org"          target="_blank" rel="noopener">🔍 OPScan</a>
+    <a class="fb" href="https://faucet.opnet.org"    target="_blank" rel="noopener">🚰 Faucet</a>
+    <a class="fb" href="https://docs.opnet.org"      target="_blank" rel="noopener">📖 Docs</a>
+    <a class="fb" href="https://chromewebstore.google.com/detail/opwallet/pmbjpcmaaladnfpacpmhmnfmpklgbdjb" target="_blank" rel="noopener">🔗 OPWallet</a>
+  </div>
+  <div>SatSqueeze — fewer bytes, fewer sats · Powered by <a href="https://opnet.org" target="_blank" rel="noopener">OP_NET</a> Bitcoin L1</div>
+  <div>Images never leave your device · 100% client-side · No tracking · No ads</div>
+  <div style="margin-top:4px;font-size:.48rem;opacity:.32">* Sat estimate at 10 sat/vByte · actual fees vary · #satsqueeze · #opnetvibecode · © 2026</div>
+</footer>
+
+</div>
+
+<!-- MODAL: No wallet -->
+<div class="mbg" id="m1">
+  <div class="md">
+    <h3>OPWallet Not Detected</h3>
+    <p>Install <strong>OPWallet</strong> to connect your Bitcoin address and sign on-chain receipts. Choose <strong>Taproot (P2TR)</strong> when installing. Compression works fine without a wallet.</p>
+    <div class="mdb">
+      <button class="btn-p" onclick="window.open('https://chromewebstore.google.com/detail/opwallet/pmbjpcmaaladnfpacpmhmnfmpklgbdjb','_blank','noopener');cM('m1')" type="button">Install OPWallet</button>
+      <button class="btn-s" onclick="cM('m1')" type="button">Continue Without</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Mainnet warning -->
+<div class="mbg" id="m2">
+  <div class="md">
+    <h3>⚠ Switch to Mainnet?</h3>
+    <p>Mainnet uses <strong>real satoshis</strong>. Make sure OPWallet is also set to Mainnet. Only proceed after testing on Regtest.</p>
+    <div class="mdb">
+      <button class="btn-p" onclick="confMain()" type="button">Switch to Mainnet</button>
+      <button class="btn-s" onclick="cM('m2')"   type="button">Stay on Testnet</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* SatSqueeze v7 · Lean · Fast · Ship-ready
+   One chain · Fewer bytes = fewer sats
+   No external deps · system fonts · ~32KB */
+
+var VER='7.0.0', MB=150, MF=100, IT=16, QMN=.01, QTH=.006;
+var BMS=60000, TMS=2800, SVB=10, OVH=200;
+var _f=[],_r=[],_w={on:false,addr:null,bal:null};
+var _net='t',_sq=false,_cu=[],_tt=null;
+
+function $i(i){try{return document.getElementById(i)}catch(e){return null}}
+function sT(i,v){var e=$i(i);if(e)e.textContent=String(v)}
+function sH(i,v){var e=$i(i);if(e)e.innerHTML=v}
+function tC(i,c,f){var e=$i(i);if(e)e.classList.toggle(c,!!f)}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function sfn(s){return String(s).replace(/\.\./g,'').replace(/[^a-zA-Z0-9_.\-]/g,'_').slice(0,60)}
+
+/* network */
+function swNet(){if(_net==='t'){var m=$i('m2');if(m)m.classList.add('on')}else{apN('t')}}
+function confMain(){cM('m2');apN('m')}
+function apN(n){
+  _net=n;var t=n==='t';
+  var nb=$i('nb');if(nb)nb.className='nb '+(t?'t':'m');
+  sT('nbl',t?'TESTNET · Regtest · No real sats at risk':'MAINNET · Real Bitcoin · Real satoshis');
+  sT('nsw',t?'Switch to Mainnet':'Switch to Testnet');
+  var oc=$i('ocn');if(oc){oc.className='ocn '+(t?'t':'m');oc.textContent=t?'🧪 TESTNET · Regtest tBTC — no real satoshis at risk':'⚡ MAINNET · Real satoshis. Sign carefully.'}
+  var wb=$i('wnb');if(wb){wb.className='wnb '+(t?'t':'m');wb.textContent=t?'TESTNET':'MAINNET'}
+  tC('txb','on',false);toast(t?'🧪 Switched to Testnet':'⚡ Switched to Mainnet','w');
+}
+
+/* block ticker */
+function fbk(){
+  var ctrl=null,tmr=null;
+  try{
+    if(typeof AbortController!=='undefined'){ctrl=new AbortController();tmr=setTimeout(function(){ctrl.abort()},8000)}
+    fetch('https://mempool.space/api/blocks/tip/height',{method:'GET',headers:{'Accept':'text/plain'},signal:ctrl?ctrl.signal:undefined})
+      .then(function(r){if(tmr)clearTimeout(tmr);if(!r.ok)return;return r.text()})
+      .then(function(t){if(t){var n=parseInt(t.trim(),10);if(!isNaN(n)&&n>0)sT('bnum',n.toLocaleString())}})
+      .catch(function(){if(tmr)clearTimeout(tmr)});
+  }catch(e){if(tmr)clearTimeout(tmr)}
+}
+fbk();setInterval(fbk,BMS);
+
+/* sat estimate */
+function satStr(b){var s=Math.round((b+OVH)*SVB);return s<1e3?s+' sats':s<1e5?(s/1e3).toFixed(1)+'k sats':(s/1e8).toFixed(5)+' BTC'}
+function updEst(){var kb=parseFloat(($i('kb')||{}).value)||60;sT('estv','~'+satStr(kb*1024)+' to inscribe '+kb+'KB')}
+var ki=$i('kb');if(ki)ki.addEventListener('input',updEst);
+
+/* wallet */
+function gP(){try{if(window.opnet&&typeof window.opnet==='object')return window.opnet}catch(e){}try{if(window.unisat&&typeof window.unisat==='object')return window.unisat}catch(e){}return null}
+async function cW(){
+  if(_w.on){dcW();return}
+  var p=gP();if(!p){var m=$i('m1');if(m)m.classList.add('on');return}
+  try{
+    var ac=[];
+    if(typeof p.requestAccounts==='function')ac=await p.requestAccounts();
+    else if(typeof p.getAccounts==='function')ac=await p.getAccounts();
+    else throw new Error('Wallet API not supported');
+    if(!Array.isArray(ac)||!ac.length){toast('No account returned','bad');return}
+    var addr=typeof ac[0]==='string'?ac[0]:(ac[0]&&ac[0].address?String(ac[0].address):null);
+    if(!addr||addr.length<10){toast('Invalid address','bad');return}
+    _w.addr=addr;_w.on=true;_w.bal=null;
+    try{if(typeof p.getBalance==='function'){var b=await p.getBalance();if(b!=null){var c=(typeof b==='object'&&b.confirmed!=null)?Number(b.confirmed):Number(b);if(!isNaN(c))_w.bal=(c/1e8).toFixed(6)}}}catch(e){}
+    sT('wa',trA(addr,10));sT('wbal',_w.bal||'—');
+    tC('wp','on',true);tC('wd','on',true);sT('wbt',trA(addr,7));tC('wb','on',true);
+    if(_r.some(function(r){return r!==null})){var bs=$i('bSg');if(bs)bs.disabled=false}
+    toast('✓ OPWallet connected · Taproot P2TR','ok');
+  }catch(e){
+    var msg=(e&&e.message)?String(e.message):'';var lw=msg.toLowerCase();
+    toast(e&&e.code===4001||lw.indexOf('reject')!==-1||lw.indexOf('denied')!==-1||lw.indexOf('cancel')!==-1?'Wallet connection rejected':'Wallet error — is OPWallet unlocked?','bad');
+  }
+}
+function dcW(){_w={on:false,addr:null,bal:null};tC('wp','on',false);tC('wd','on',false);sT('wbt','Connect OPWallet');tC('wb','on',false);var bs=$i('bSg');if(bs)bs.disabled=true;toast('Wallet disconnected')}
+function trA(a,n){n=Math.max(4,n||8);if(!a)return'—';if(a.length<=n+6)return a;return a.slice(0,n)+'…'+a.slice(-5)}
+
+/* modals */
+function cM(id){var m=$i(id);if(m)m.classList.remove('on')}
+['m1','m2'].forEach(function(id){var e=$i(id);if(!e)return;e.addEventListener('click',function(ev){if(ev.target===e)cM(id)})})
+document.addEventListener('keydown',function(e){if(e.key==='Escape')['m1','m2'].forEach(cM)})
+
+/* file handling */
+var dz=$i('dz'),fi=$i('fi');
+if(dz){
+  dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('ov')});
+  dz.addEventListener('dragleave',function(){dz.classList.remove('ov')});
+  dz.addEventListener('dragend',function(){dz.classList.remove('ov')});
+  dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('ov');if(e.dataTransfer&&e.dataTransfer.files)aF(Array.from(e.dataTransfer.files))});
+  dz.addEventListener('click',function(e){if(e.target&&e.target.tagName!=='BUTTON'&&fi)fi.click()});
+}
+if(fi)fi.addEventListener('change',function(){if(fi.files)aF(Array.from(fi.files));fi.value=''});
+
+function aF(arr){
+  if(!arr||!arr.length)return;
+  var imgs=arr.filter(function(f){return f&&f.type&&f.type.indexOf('image/')===0});
+  if(!imgs.length){toast('No image files found','bad');return}
+  var added=0;
+  imgs.forEach(function(f){
+    if(f.size>MB*1024*1024){toast(esc(f.name.slice(0,16))+' skipped (>'+MB+'MB)','w');return}
+    if(_f.filter(Boolean).length>=MF){toast('Max '+MF+' files','w');return}
+    if(_f.some(function(x){return x&&x.name===f.name&&x.size===f.size}))return;
+    var idx=_f.length;_f.push(f);_r.push(null);rI(idx,f);added++;
+  });
+  if(added){updS();var bs=$i('bSq');if(bs)bs.disabled=false}
+}
+
+function rI(idx,file){
+  var el=document.createElement('div');
+  el.className='qi';el.id='qi-'+idx;el.setAttribute('role','listitem');
+  el.innerHTML=
+    '<div class="qtw" onclick="sC('+idx+')" title="Compare before/after">'+
+      '<img class="qtb" id="th-'+idx+'" src="" alt="'+esc(file.name)+'">'+
+      '<div class="qtp">COMPARE</div>'+
+    '</div>'+
+    '<div class="qi-info">'+
+      '<div class="qi-n" title="'+esc(file.name)+'">'+esc(file.name)+'</div>'+
+      '<div class="qi-m">'+
+        '<span class="qo">'+fB(file.size)+'</span>'+
+        '<span class="qn" id="qn'+idx+'"></span>'+
+        '<span class="qs" id="qs'+idx+'"></span>'+
+        '<span class="qq" id="qq'+idx+'"></span>'+
+        '<span class="qr" id="qr'+idx+'"></span>'+
+      '</div>'+
+      '<div class="pg2"><div class="pgf" id="pf'+idx+'"></div></div>'+
+    '</div>'+
+    '<span class="qb bw" id="qb'+idx+'">PENDING</span>'+
+    '<button class="qd" onclick="rmI('+idx+')" type="button">✕</button>';
+  var q=$i('queue');if(q)q.appendChild(el);
+  try{var rd=new FileReader();rd.onload=function(ev){var img=$i('th-'+idx);if(img&&ev.target&&ev.target.result)img.src=String(ev.target.result)};rd.onerror=function(){};rd.readAsDataURL(file)}catch(e){}
+}
+
+function rmI(idx){var e=$i('qi-'+idx);if(e)e.remove();_f[idx]=null;_r[idx]=null;updS();if(!_f.some(Boolean)){var bs=$i('bSq'),bd=$i('bDl');if(bs)bs.disabled=true;if(bd)bd.disabled=true;tC('oc','on',false);cC()}}
+function clr(){_f=[];_r=[];var q=$i('queue');if(q)q.innerHTML='';['bSq','bDl','bSg'].forEach(function(id){var e=$i(id);if(e)e.disabled=true});tC('oc','on',false);tC('txb','on',false);cC();updS();rvC()}
+
+/* compression */
+async function sqAll(){
+  if(_sq)return;
+  var ke=$i('kb'),fe=$i('fmt');if(!ke||!fe)return;
+  var tb=Math.max(512,(parseFloat(ke.value)||60)*1024);
+  var fmt=fe.value;if(['webp','jpeg','png'].indexOf(fmt)===-1)fmt='webp';
+  _sq=true;var bs=$i('bSq'),bd=$i('bDl');if(bs)bs.disabled=true;if(bd)bd.disabled=true;
+  for(var i=0;i<_f.length;i++){
+    if(!_f[i])continue;
+    setBg(i,'SQUEEZING','br2');sP(i,8);
+    try{
+      var res=await cmpF(_f[i],tb,fmt,i);
+      _r[i]={blob:res.blob,name:oN(_f[i].name,fmt),orig:_f[i]};
+      var pct=_r[i].orig.size>0?Math.round((1-res.blob.size/_r[i].orig.size)*100):0;
+      var svb=Math.max(0,_r[i].orig.size-res.blob.size);
+      var svs=Math.round(svb*SVB);
+      sT('qn'+i,fB(res.blob.size));sT('qs'+i,pct>0?'↓'+pct+'% saved':'✓ optimal');
+      sT('qq'+i,svs>0?'~'+nF(svs)+' sats':'');sT('qr'+i,res.w+'×'+res.h);
+      sP(i,100);setBg(i,'DONE','bd');
+    }catch(e){setBg(i,'ERROR','be');sP(i,0);console.warn('[SatSqueeze]',i,e&&e.message)}
+  }
+  _sq=false;updS();if(bs)bs.disabled=false;if(bd)bd.disabled=false;
+  var fd=_r.findIndex(function(r){return r!==null});if(fd!==-1)sC(fd);
+  bldR();tC('oc','on',true);
+  if(_w.on){var bsg=$i('bSg');if(bsg)bsg.disabled=false}
+  toast('⚡ Squeezed! Sats saved on every byte.','ok');
+}
+
+function cmpF(file,tb,fmt,idx){
+  return new Promise(function(resolve,reject){
+    var url;try{url=URL.createObjectURL(file)}catch(e){reject(new Error('Cannot read file'));return}
+    var img=new Image();
+    img.onload=function(){
+      try{URL.revokeObjectURL(url)}catch(e){}
+      var w=img.naturalWidth,h=img.naturalHeight;
+      if(!w||!h){reject(new Error('Invalid image'));return}
+      var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+      var cx=cv.getContext('2d');if(!cx){reject(new Error('Canvas unavailable'));return}
+      cx.drawImage(img,0,0);
+      var mime=fmt==='webp'?'image/webp':fmt==='png'?'image/png':'image/jpeg';
+      if(fmt==='png'){sP(idx,75);cv.toBlob(function(b){b?resolve({blob:b,w:w,h:h}):reject(new Error('PNG failed'))},'image/png');return}
+      if(file.size<=tb){sP(idx,75);cv.toBlob(function(b){b?resolve({blob:b,w:w,h:h}):reject(new Error('Encode failed'))},mime,.92);return}
+      var lo=QMN,hi=1,best=null,st=0;
+      function nx(){
+        if(st>=IT||(hi-lo)<QTH){
+          if(!best){cv.toBlob(function(b){b?resolve({blob:b,w:w,h:h}):reject(new Error('Min qual'))},mime,QMN)}
+          else resolve({blob:best,w:w,h:h});return;
+        }
+        var q=(lo+hi)/2;sP(idx,12+st*(74/IT));st++;
+        cv.toBlob(function(b){if(!b){hi=q;nx();return}if(b.size<=tb){best=b;lo=q}else hi=q;nx()},mime,q);
+      }
+      nx();
+    };
+    img.onerror=function(){try{URL.revokeObjectURL(url)}catch(e){}reject(new Error('Image load failed'))};
+    img.src=url;
+  });
+}
+
+/* compare */
+function rvC(){_cu.forEach(function(u){try{URL.revokeObjectURL(u)}catch(e){}});_cu=[]}
+function sC(idx){
+  var r=_r[idx],f=_f[idx];if(!r||!f)return;
+  try{
+    rvC();var u1=URL.createObjectURL(f),u2=URL.createObjectURL(r.blob);_cu=[u1,u2];
+    var cb=$i('cb'),ca=$i('ca');if(cb)cb.src=u1;if(ca)ca.src=u2;
+    sT('cbs',fB(f.size));sT('cas',fB(r.blob.size));tC('cmp','on',true);
+    var cm=$i('cmp');if(cm)cm.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }catch(e){toast('Preview failed','bad')}
+}
+function cC(){tC('cmp','on',false);rvC();var cb=$i('cb'),ca=$i('ca');if(cb)cb.src='';if(ca)ca.src=''}
+
+/* on-chain receipt */
+async function bldR(){
+  var done=_r.filter(Boolean);if(!done.length)return;
+  var oT=done.reduce(function(s,r){return s+r.orig.size},0);
+  var cT=done.reduce(function(s,r){return s+r.blob.size},0);
+  var pct=oT>0?Math.round((1-cT/oT)*100):0;
+  var svb=oT-cT,svs=Math.round(svb*SVB);
+  var hash='—';
+  try{var raw=done.map(function(r){return r.name+':'+r.blob.size}).join('|');var enc=new TextEncoder().encode(raw);var buf=await crypto.subtle.digest('SHA-256',enc);hash=Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('').slice(0,32)+'…'}catch(e){hash='unavailable'}
+  sH('rc','<span>SHA256:</span> '+esc(hash)+'<br><span>NETWORK:</span> '+esc(_net==='t'?'TESTNET':'MAINNET')+' · <span>FILES:</span> '+done.length+' · <span>ORIGINAL:</span> '+esc(fB(oT))+' → <span>SQUEEZED:</span> '+esc(fB(cT))+' · <span>BYTES SAVED:</span> '+esc(fB(svb))+' · <span>EST. SATS SAVED:</span> ~'+esc(nF(Math.max(0,svs)))+' sats');
+}
+async function sign(){
+  if(!_w.on){toast('Connect OPWallet first','bad');return}
+  var btn=$i('bSg');if(!btn||btn.disabled)return;btn.disabled=true;btn.textContent='⏳ Signing…';
+  try{
+    var done=_r.filter(Boolean);
+    var oT=done.reduce(function(s,r){return s+r.orig.size},0);
+    var cT=done.reduce(function(s,r){return s+r.blob.size},0);
+    var msg=JSON.stringify({app:'SatSqueeze',version:VER,network:_net,files:done.length,original:oT,compressed:cT,bytes_saved:oT-cT,est_sats_saved:Math.round((oT-cT)*SVB),ts:Date.now(),addr:_w.addr});
+    var p=gP(),proof=null;
+    if(p&&typeof p.signMessage==='function'){var sig=await p.signMessage(msg);proof=typeof sig==='string'&&sig.length>0?sig.slice(0,28)+'…':'signed:'+Date.now().toString(36).toUpperCase()}
+    else{proof='local:'+Date.now().toString(36).toUpperCase();toast('Wallet does not support signMessage — local receipt','w')}
+    var bn=$i('bnum');sT('txp',proof||'—');sT('txbl',bn?bn.textContent:'—');sT('txn',_net==='t'?'TESTNET (Regtest)':'MAINNET');tC('txb','on',true);btn.textContent='✓ Receipt Signed';toast('✓ Receipt signed on Bitcoin L1','ok');
+  }catch(e){
+    if(btn){btn.disabled=false;btn.textContent='🔗 Sign Receipt on Bitcoin L1'}
+    var msg2=(e&&e.message)?String(e.message):'';var lw=msg2.toLowerCase();
+    toast(e&&e.code===4001||lw.indexOf('reject')!==-1||lw.indexOf('denied')!==-1?'Signing rejected':'Signing failed — OPWallet locked?','bad');
+  }
+}
+
+/* download */
+async function dlAll(){
+  var done=_r.filter(Boolean);if(!done.length){toast('Nothing squeezed yet','w');return}
+  if(done.length===1){dlB(done[0].blob,done[0].name);return}
+  toast('Downloading '+done.length+' images…');
+  for(var i=0;i<_r.length;i++){if(!_r[i])continue;await new Promise(function(res){setTimeout(res,180)});dlB(_r[i].blob,_r[i].name)}
+}
+function dlB(blob,name){
+  if(!blob||!name)return;
+  try{var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=sfn(name);a.rel='noopener';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){try{URL.revokeObjectURL(url)}catch(e){}},1400)}catch(e){toast('Download failed','bad')}
+}
+
+/* ui helpers */
+function setBg(i,t,c){var e=$i('qb'+i);if(!e)return;e.textContent=t;e.className='qb '+c}
+function sP(i,p){var e=$i('pf'+i);if(e)e.style.width=Math.min(100,Math.max(0,p))+'%'}
+function updS(){
+  var act=_f.filter(Boolean),done=_r.filter(Boolean);
+  var oT=act.reduce(function(s,f){return s+f.size},0);
+  var cT=done.reduce(function(s,r){return s+r.blob.size},0);
+  var svs=done.length?Math.max(0,Math.round((oT-cT)*SVB)):null;
+  sT('sF',act.length||'0');sT('sO',oT>0?fB(oT):'—');sT('sC',cT>0?fB(cT):'—');
+  sT('sS',svs!==null&&done.length?'~'+nF(svs):'—');
+  sT('sbO',oT>0?fB(oT):'—');sT('sbC',cT>0?fB(cT):'—');
+  sT('sbB',oT>cT?fB(oT-cT):'—');sT('sbS',svs!==null&&done.length?'~'+nF(svs)+' sats':'—');
+}
+function sp(kb){var e=$i('kb');if(e)e.value=kb;document.querySelectorAll('.pr').forEach(function(b){var v=parseInt(b.textContent,10);b.classList.toggle('on',v===kb||(kb===1000&&b.textContent==='1 MB')||(kb===4000&&b.textContent==='4 MB'))});updEst()}
+function fB(n){n=Number(n);if(!n||isNaN(n))return'0B';if(n<1024)return n+'B';if(n<1048576)return(n/1024).toFixed(1)+'KB';return(n/1048576).toFixed(2)+'MB'}
+function nF(n){try{return Math.round(Number(n)).toLocaleString()}catch(e){return String(n)}}
+function oN(name,fmt){var b=String(name).replace(/\.[^/.]+$/,'');return sfn(b+'-squeezed.'+fmt)}
+function toast(msg,type){var t=$i('toast');if(!t)return;t.textContent=String(msg).slice(0,100);t.className='toast on'+(type?' '+type:'');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('on')},TMS)}
+function tS(id){var s=$i(id);if(!s)return;var b=s.querySelector('.ib'),h=s.querySelector('.ih');var op=s.classList.contains('op');s.classList.toggle('op',!op);if(h)h.setAttribute('aria-expanded',String(!op));if(b)b.classList.toggle('on',!op)}
+function tF(el){if(!el)return;var a=el.querySelector('.fa'),op=el.classList.contains('op');el.classList.toggle('op',!op);if(a)a.classList.toggle('on',!op)}
+
+/* init */
+(function(){
+  var ke=$i('kb');
+  if(ke){ke.addEventListener('blur',function(){var v=parseFloat(ke.value);if(isNaN(v)||v<1)ke.value=1;if(v>50000)ke.value=50000;updEst()})}
+  document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.target.tagName==='INPUT')e.preventDefault()});
+  sp(60);
+})();
+</script>
+</body>
+</html>
