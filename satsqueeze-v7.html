@@ -447,6 +447,33 @@ footer a:hover{text-decoration:underline}
   <button class="btn-g"         onclick="clr()"            type="button">Clear</button>
 </div>
 
+<!-- INSCRIBE CTA — shows after squeeze -->
+<div id="inscribeFlow" style="display:none;animation:fd .3s ease">
+  <div style="background:linear-gradient(135deg,rgba(247,147,26,.07),rgba(247,147,26,.02));border:1px solid rgba(247,147,26,.2);border-radius:var(--r);padding:16px 18px;margin-bottom:12px">
+    <div style="font-size:.84rem;font-weight:800;margin-bottom:6px">🟠 Ready to Inscribe on Bitcoin L1?</div>
+    <div style="font-size:.72rem;color:var(--t1);line-height:1.6;margin-bottom:14px">Your images are squeezed and optimised. Download them, then head to <strong style="color:var(--s)">OPTools</strong> — the official OP_NET inscription tool — to inscribe them onto Bitcoin L1. Every byte you saved with SatSqueeze is a sat you keep.</div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap">
+      <a href="https://optools.org" target="_blank" rel="noopener noreferrer"
+        style="flex:2;min-width:140px;display:flex;align-items:center;justify-content:center;gap:8px;
+        background:var(--s);color:#000;font-family:var(--m);font-size:.68rem;font-weight:700;
+        letter-spacing:1.5px;text-transform:uppercase;padding:13px;border-radius:var(--r);
+        text-decoration:none;transition:background .15s">
+        ₿ Inscribe on Bitcoin via OPTools →
+      </a>
+      <a href="https://docs.opnet.org" target="_blank" rel="noopener noreferrer"
+        style="flex:1;min-width:110px;display:flex;align-items:center;justify-content:center;
+        background:none;color:var(--t0);font-family:var(--m);font-size:.62rem;font-weight:700;
+        letter-spacing:1px;text-transform:uppercase;padding:13px;border-radius:var(--r);
+        border:1px solid var(--d2);text-decoration:none;transition:border-color .15s">
+        📖 OP_NET Docs
+      </a>
+    </div>
+    <div style="font-family:var(--m);font-size:.52rem;color:var(--t2);margin-top:10px;line-height:1.6">
+      💡 Workflow: SatSqueeze optimises your bytes → OPTools inscribes them on Bitcoin L1 → your NFT lives on-chain forever secured by proof-of-work.
+    </div>
+  </div>
+</div>
+
 <!-- ON-CHAIN -->
 <div class="oc" id="oc">
   <div class="oct">🔗 Sign Receipt on Bitcoin L1 <span style="font-size:.58rem;color:var(--t2);font-weight:400">(optional)</span></div>
@@ -482,34 +509,15 @@ footer a:hover{text-decoration:underline}
   </div>
 </div>
 
-<div class="isec op" id="s-deploy">
-  <div class="ih" onclick="tS('s-deploy')"><span class="iht">🧪 Testnet First · Then Mainnet</span><span class="iar">▼</span></div>
-  <div class="ib on">
-    <div style="font-family:var(--m);font-size:.56rem;color:var(--yw);background:rgba(219,168,32,.05);border:1px solid rgba(219,168,32,.14);border-radius:var(--r2);padding:9px 12px;margin-bottom:14px">⚠ Always test on Regtest first. OP_NET Mainnet live March 19 2026. Free tBTC → <a href="https://faucet.opnet.org" target="_blank" rel="noopener" style="color:var(--s)">faucet.opnet.org</a></div>
-    <div class="ds"><div class="dn">1</div><div><div class="dt">Install OPWallet — Select Taproot (P2TR)</div><div class="db">Install <a href="https://chromewebstore.google.com/detail/opwallet/pmbjpcmaaladnfpacpmhmnfmpklgbdjb" target="_blank" rel="noopener">OPWallet Chrome extension</a>. Choose <strong>Taproot (P2TR)</strong> address type — required for OP_NET. Save seed phrase offline only.</div></div></div>
-    <div class="ds"><div class="dn">2</div><div><div class="dt">Switch OPWallet to Regtest</div><div class="db">OPWallet → Settings → Network → <strong>Regtest</strong>. Also toggle the banner above to Testnet. All transactions use free tBTC — no real satoshis at risk.</div></div></div>
-    <div class="ds"><div class="dn">3</div><div><div class="dt">Claim Free tBTC from the Faucet</div><div class="db">0.05 tBTC per 24h — enough for extensive testing.</div><div class="cb">👉  <em>https://faucet.opnet.org</em></div></div></div>
-    <div class="ds"><div class="dn">4</div><div><div class="dt">Test: Upload → Squeeze → Sign Receipt</div><div class="db">Upload images, squeeze them, connect OPWallet (Regtest), sign a receipt. Verify the TX on <a href="https://opscan.org" target="_blank" rel="noopener">OPScan</a> before touching Mainnet.</div></div></div>
-    <div class="ds"><div class="dn">5</div><div><div class="dt">Push to GitHub (Free)</div><div class="db">GitHub is free. Create an account at <a href="https://github.com" target="_blank" rel="noopener">github.com</a> if you don't have one — no cost. Then create a new public repository.</div><div class="cb"><em># One-time setup</em>
-git init
-git add satsqueeze-v6.html README.md
-git commit -m "SatSqueeze v6 - Bitcoin image compressor"
-git remote add origin https://github.com/YOURNAME/satsqueeze.git
-git push -u origin main</div></div></div>
-    <div class="ds"><div class="dn">6</div><div><div class="dt">Deploy Free on Vercel</div><div class="db">Vercel is free for personal projects. Connect your GitHub repo at <a href="https://vercel.com" target="_blank" rel="noopener">vercel.com</a> — it auto-deploys every push. Or drag-drop at <a href="https://netlify.com/drop" target="_blank" rel="noopener">netlify.com/drop</a> for instant test URL.</div><div class="cb"><em># Via Vercel CLI (optional)</em>
-npm install -g vercel
-vercel deploy satsqueeze-v6.html</div></div></div>
-    <div class="ds"><div class="dn">7</div><div><div class="dt">Submit + Tweet to Enter Competition</div><div class="db">Submit at <a href="https://vibecode.finance/submit" target="_blank" rel="noopener">vibecode.finance/submit</a> — you need your GitHub URL and a screenshot. Then tweet with <code>#opnetvibecode</code> and tag <code>@opnetbtc</code>. Tweet is required to qualify for prizes.</div></div></div>
-    <div class="ds"><div class="dn">8</div><div><div class="dt">Go Mainnet — Real Sats</div><div class="db">OPWallet → Network → Mainnet. Toggle banner above to Mainnet. Your squeezed images are ready for real Bitcoin inscription at minimum sat cost. Explorer: <a href="https://opscan.org" target="_blank" rel="noopener">opscan.org</a></div></div></div>
-    <div class="hr"></div>
-    <div style="font-family:var(--m);font-size:.52rem;color:var(--s);letter-spacing:2px;margin-bottom:9px">// COMPETITION SCORING</div>
-    <div class="scg">
-      <div class="scc"><div class="scp">30</div><div class="scl">Working Product<br><span style="color:var(--ok)">✓ Functional</span></div></div>
-      <div class="scc"><div class="scp">25</div><div class="scl">Innovation<br><span style="color:var(--ok)">✓ First compressor BTC L1</span></div></div>
-      <div class="scc"><div class="scp">15</div><div class="scl">UX / Polish<br><span style="color:var(--ok)">✓ Mobile-first</span></div></div>
-      <div class="scc"><div class="scp">15</div><div class="scl">Mainnet Ready<br><span style="color:var(--ok)">✓ Live 2026</span></div></div>
-      <div class="scc"><div class="scp">15</div><div class="scl">OP_NET Usage<br><span style="color:var(--ok)">✓ OPWallet + receipt</span></div></div>
-    </div>
+<div class="isec" id="s-deploy">
+  <div class="ih" onclick="tS('s-deploy')"><span class="iht">📖 How to Inscribe on Bitcoin L1</span><span class="iar">▼</span></div>
+  <div class="ib">
+    <div class="ds"><div class="dn">1</div><div><div class="dt">Squeeze Your Images First</div><div class="db">Upload your images above, set your target KB, and click <strong>⚡ Squeeze All</strong>. SatSqueeze reduces your file size while keeping full resolution. Every KB saved = sats saved on inscription fees.</div></div></div>
+    <div class="ds"><div class="dn">2</div><div><div class="dt">Download Your Squeezed Images</div><div class="db">Click <strong>↓ Download All</strong> to save your optimised images. These are your inscription-ready files — smaller bytes, same quality, ready to go on-chain.</div></div></div>
+    <div class="ds"><div class="dn">3</div><div><div class="dt">Install OPWallet (if you haven't)</div><div class="db">OPWallet is the official Bitcoin wallet for OP_NET. Install from the <a href="https://chromewebstore.google.com/detail/opwallet/pmbjpcmaaladnfpacpmhmnfmpklgbdjb" target="_blank" rel="noopener">Chrome Web Store</a>. Choose <strong>Taproot (P2TR)</strong> address type — required for all OP_NET inscriptions. Store your seed phrase safely offline.</div></div></div>
+    <div class="ds"><div class="dn">4</div><div><div class="dt">Go to OPTools to Inscribe</div><div class="db">OPTools is the official OP_NET inscription platform. Upload your squeezed images there and inscribe them directly onto Bitcoin L1. Your images are written into Taproot witness data — permanent, on-chain, forever.</div><div class="cb">👉  <em><a href="https://optools.org" target="_blank" rel="noopener" style="color:var(--s)">https://optools.org</a></em></div></div></div>
+    <div class="ds"><div class="dn">5</div><div><div class="dt">Verify on OPScan</div><div class="db">After inscribing, check your transaction on OPScan — the official OP_NET block explorer. Your inscription hash, block height, and wallet address are all permanently recorded on Bitcoin L1.</div><div class="cb">👉  <em><a href="https://opscan.org" target="_blank" rel="noopener" style="color:var(--s)">https://opscan.org</a></em></div></div></div>
+    <div class="ds"><div class="dn">6</div><div><div class="dt">Your NFT Is Now on Bitcoin Forever</div><div class="db">Secured by Bitcoin proof-of-work. No server can take it down. No company can delete it. Every byte you saved with SatSqueeze was a sat you kept in your wallet. That's the whole point. 🟠</div></div></div>
   </div>
 </div>
 
@@ -717,7 +725,7 @@ function rI(idx,file){
 }
 
 function rmI(idx){var e=$i('qi-'+idx);if(e)e.remove();_f[idx]=null;_r[idx]=null;updS();if(!_f.some(Boolean)){var bs=$i('bSq'),bd=$i('bDl');if(bs)bs.disabled=true;if(bd)bd.disabled=true;tC('oc','on',false);cC()}}
-function clr(){_f=[];_r=[];var q=$i('queue');if(q)q.innerHTML='';['bSq','bDl','bSg'].forEach(function(id){var e=$i(id);if(e)e.disabled=true});tC('oc','on',false);tC('txb','on',false);cC();updS();rvC()}
+function clr(){_f=[];_r=[];var q=$i('queue');if(q)q.innerHTML='';['bSq','bDl','bSg'].forEach(function(id){var e=$i(id);if(e)e.disabled=true});tC('oc','on',false);tC('txb','on',false);cC();updS();rvC();var ifl=$i('inscribeFlow');if(ifl)ifl.style.display='none'}
 
 /* compression */
 async function sqAll(){
@@ -744,7 +752,8 @@ async function sqAll(){
   var fd=_r.findIndex(function(r){return r!==null});if(fd!==-1)sC(fd);
   bldR();tC('oc','on',true);
   if(_w.on){var bsg=$i('bSg');if(bsg)bsg.disabled=false}
-  toast('⚡ Squeezed! Sats saved on every byte.','ok');
+  var ifl=$i('inscribeFlow');if(ifl)ifl.style.display='block';
+  toast('⚡ Squeezed! Ready to inscribe on Bitcoin L1.','ok');
 }
 
 function cmpF(file,tb,fmt,idx){
