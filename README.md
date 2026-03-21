@@ -8,7 +8,7 @@ Compresses inscription images to your exact KB target.
 Same resolution. Less sats spent on Bitcoin L1.
 
 ## Live App
-[Add your Vercel URL here after deploying]
+Live App: https://satsqueeze.vercel.app
 
 ## Built for
 vibecode.finance OP_NET Vibecoding Challenge  
