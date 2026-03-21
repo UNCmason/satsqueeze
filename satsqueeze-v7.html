@@ -32,9 +32,12 @@ body::after{content:'';position:fixed;top:-260px;left:50%;transform:translateX(-
 
 .pg{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:0 14px 80px}
 
+/* BASE FONT BUMP — everything reads comfortably now */
+html{font-size:17px}
+
 /* netbar */
 .nb{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;
-  padding:6px 12px;font-family:var(--m);font-size:.56rem;letter-spacing:1.5px;
+  padding:6px 12px;font-family:var(--m);font-size:.65rem;letter-spacing:1.5px;
   border-bottom:1px solid var(--d1)}
 .nb.t{background:rgba(219,168,32,.04);color:var(--yw)}
 .nb.m{background:rgba(63,184,95,.035);color:var(--ok)}
@@ -78,14 +81,14 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0
   font-family:var(--m);font-size:.54rem;color:var(--s);letter-spacing:2px;text-transform:uppercase}
 .hero h1{font-size:clamp(2.2rem,8vw,4rem);font-weight:900;letter-spacing:-2px;line-height:.92;margin-bottom:14px}
 .hero h1 em{color:var(--s);font-style:normal}
-.hero-sub{font-size:clamp(.84rem,2.5vw,.98rem);color:var(--t1);max-width:460px;margin:0 auto 20px;line-height:1.6;font-weight:500}
+.hero-sub{font-size:clamp(1rem,2.5vw,1.12rem);color:var(--t1);max-width:460px;margin:0 auto 20px;line-height:1.65;font-weight:500}
 /* sat banner */
 .sbn{display:flex;flex-wrap:wrap;justify-content:center;gap:0;background:var(--b1);
   border:1px solid var(--d2);border-radius:var(--r);overflow:hidden;margin-bottom:0}
-.sbi{padding:10px 16px;text-align:center;flex:1;min-width:80px}
+.sbi{padding:12px 16px;text-align:center;flex:1;min-width:80px}
 .sbi+.sbi{border-left:1px solid var(--d1)}
-.sbi strong{display:block;font-size:.9rem;font-weight:800;color:var(--s);font-family:var(--m);margin-bottom:2px}
-.sbi span{font-family:var(--m);font-size:.52rem;color:var(--t2);letter-spacing:1px;text-transform:uppercase}
+.sbi strong{display:block;font-size:1rem;font-weight:800;color:var(--s);font-family:var(--m);margin-bottom:3px}
+.sbi span{font-family:var(--m);font-size:.62rem;color:var(--t2);letter-spacing:1px;text-transform:uppercase}
 .sbi.yw strong{color:var(--yw)}
 
 /* wallet panel */
@@ -94,34 +97,35 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0
   margin-bottom:12px;display:none}
 .wp.on{display:flex;align-items:center;gap:12px;flex-wrap:wrap;animation:fd .25s ease}
 @keyframes fd{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
-.wa{font-family:var(--m);font-size:.65rem;color:var(--s);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wb2{font-family:var(--m);font-size:.62rem;color:var(--t1);flex-shrink:0}
+.wa{font-family:var(--m);font-size:.76rem;color:var(--s);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wb2{font-family:var(--m);font-size:.72rem;color:var(--t1);flex-shrink:0}
 .wb2 strong{color:var(--s)}
-.wnb{font-family:var(--m);font-size:.5rem;padding:3px 8px;border-radius:100px;flex-shrink:0}
+.wnb{font-family:var(--m);font-size:.62rem;padding:3px 8px;border-radius:100px;flex-shrink:0}
 .wnb.t{background:rgba(219,168,32,.1);color:var(--yw);border:1px solid rgba(219,168,32,.2)}
 .wnb.m{background:rgba(63,184,95,.07);color:var(--ok);border:1px solid rgba(63,184,95,.17)}
 
 /* stats */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-@media(max-width:400px){.stats{grid-template-columns:repeat(2,1fr)}}
-.stat{background:var(--b1);border:1px solid var(--d1);border-radius:var(--r);padding:12px 8px;text-align:center}
-.sv{display:block;font-size:1.1rem;font-weight:800;color:var(--s);font-family:var(--m);letter-spacing:-.5px;line-height:1;margin-bottom:3px}
-.sl{font-size:.5rem;color:var(--t2);text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:500px){.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:360px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--b1);border:1px solid var(--d1);border-radius:var(--r);padding:14px 8px;text-align:center}
+.sv{display:block;font-size:1.25rem;font-weight:800;color:var(--s);font-family:var(--m);letter-spacing:-.5px;line-height:1;margin-bottom:4px}
+.sl{font-size:.65rem;color:var(--t2);text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
 
 /* slabel */
-.sl2{font-family:var(--m);font-size:.52rem;letter-spacing:2px;color:var(--t2);text-transform:uppercase;margin-bottom:8px;margin-top:4px}
+.sl2{font-family:var(--m);font-size:.65rem;letter-spacing:2px;color:var(--t2);text-transform:uppercase;margin-bottom:8px;margin-top:4px}
 
 /* card / settings */
-.card{background:var(--b1);border:1px solid var(--d1);border-radius:var(--r);padding:15px 17px;margin-bottom:12px}
+.card{background:var(--b1);border:1px solid var(--d1);border-radius:var(--r);padding:16px 18px;margin-bottom:12px}
 .sg{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
-.field label{font-family:var(--m);font-size:.52rem;color:var(--t2);letter-spacing:1px;text-transform:uppercase}
+.field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:120px}
+.field label{font-family:var(--m);font-size:.65rem;color:var(--t2);letter-spacing:1px;text-transform:uppercase}
 .ir{display:flex}
 .ir input{border-radius:var(--r2) 0 0 var(--r2)!important;flex:1;min-width:0}
-.iu{background:var(--s);color:#000;font-family:var(--m);font-size:.65rem;font-weight:700;
-  padding:0 12px;border-radius:0 var(--r2) var(--r2) 0;display:flex;align-items:center;white-space:nowrap;flex-shrink:0}
+.iu{background:var(--s);color:#000;font-family:var(--m);font-size:.75rem;font-weight:700;
+  padding:0 13px;border-radius:0 var(--r2) var(--r2) 0;display:flex;align-items:center;white-space:nowrap;flex-shrink:0}
 input[type=number],select{background:var(--b2);border:1px solid var(--d2);border-radius:var(--r2);
-  color:var(--t0);font-family:var(--m);font-size:.76rem;padding:9px 11px;
+  color:var(--t0);font-family:var(--m);font-size:.88rem;padding:10px 12px;
   outline:none;width:100%;transition:border-color .15s;-webkit-appearance:none;appearance:none}
 input[type=number]{-moz-appearance:textfield}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
@@ -131,15 +135,15 @@ select{cursor:pointer;
   background-repeat:no-repeat;background-position:right 11px center;padding-right:28px}
 option{background:var(--b2);color:var(--t0)}
 /* sat estimate */
-.se{font-family:var(--m);font-size:.56rem;color:var(--t2);background:var(--b2);
-  border:1px solid var(--d1);border-radius:var(--r2);padding:8px 12px;
+.se{font-family:var(--m);font-size:.68rem;color:var(--t2);background:var(--b2);
+  border:1px solid var(--d1);border-radius:var(--r2);padding:9px 13px;
   margin-top:-3px;margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .se span{color:var(--s);font-weight:700}
 /* presets */
-.prs{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-.plb{font-family:var(--m);font-size:.52rem;color:var(--t2);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.prs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.plb{font-family:var(--m);font-size:.64rem;color:var(--t2);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
 .pr{background:var(--b2);border:1px solid var(--d1);color:var(--t2);
-  font-family:var(--m);font-size:.56rem;padding:4px 10px;border-radius:100px;
+  font-family:var(--m);font-size:.68rem;padding:5px 12px;border-radius:100px;
   cursor:pointer;transition:all .13s;letter-spacing:.5px}
 .pr:hover{border-color:var(--s);color:var(--s)}
 .pr.on{border-color:var(--s);color:var(--s);background:rgba(247,147,26,.08)}
@@ -155,8 +159,8 @@ option{background:var(--b2);color:var(--t0)}
 .dz:hover,.dz.ov{border-color:var(--s)}
 .dzi{position:relative;z-index:1}
 .dz-ic{font-size:2.2rem;display:block;margin-bottom:10px;line-height:1;user-select:none}
-.dz-t{font-size:1rem;font-weight:800;margin-bottom:6px}
-.dz-s{font-family:var(--m);font-size:.6rem;color:var(--t2);line-height:1.8}
+.dz-t{font-size:1.1rem;font-weight:800;margin-bottom:6px}
+.dz-s{font-family:var(--m);font-size:.7rem;color:var(--t2);line-height:1.8}
 .dz-s strong{color:var(--s)}
 .br{display:inline-block;margin-top:13px;background:var(--s);color:#000;
   font-family:var(--m);font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
@@ -177,8 +181,8 @@ option{background:var(--b2);color:var(--t0)}
   color:#fff;opacity:0;transition:opacity .14s;pointer-events:none;letter-spacing:.5px}
 .qtw:hover .qtp{opacity:1}
 .qi-info{flex:1;min-width:0}
-.qi-n{font-size:.76rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
-.qi-m{display:flex;gap:7px;flex-wrap:wrap;font-family:var(--m);font-size:.56rem;color:var(--t2);margin-bottom:4px}
+.qi-n{font-size:.86rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.qi-m{display:flex;gap:7px;flex-wrap:wrap;font-family:var(--m);font-size:.66rem;color:var(--t2);margin-bottom:4px}
 .qo{color:var(--t2)}.qn{color:var(--ok)}.qs{color:var(--s);font-weight:700}.qq{color:var(--yw)}.qr{color:var(--bl)}
 .pg2{height:3px;background:var(--d1);border-radius:2px;overflow:hidden}
 .pgf{height:100%;background:linear-gradient(90deg,var(--s2),var(--s));border-radius:2px;width:0%;transition:width .28s}
@@ -253,9 +257,9 @@ option{background:var(--b2);color:var(--t0)}
 .isec{background:var(--b1);border:1px solid var(--d1);border-radius:var(--r)}
 .ih{padding:13px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;transition:background .14s;border-radius:var(--r)}
 .ih:hover{background:rgba(247,147,26,.018)}
-.iht{font-size:.84rem;font-weight:800;transition:color .14s}
+.iht{font-size:.95rem;font-weight:800;transition:color .14s}
 .ih:hover .iht{color:var(--s)}
-.iar{font-family:var(--m);font-size:.6rem;color:var(--t2);transition:transform .2s;flex-shrink:0}
+.iar{font-family:var(--m);font-size:.65rem;color:var(--t2);transition:transform .2s;flex-shrink:0}
 .isec.op .iar{transform:rotate(180deg)}
 .ib{display:none;padding:0 16px 16px}
 .ib.on{display:block}
@@ -374,11 +378,12 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <!-- STATS -->
-<div class="stats">
+<div class="stats" role="region" aria-label="Compression statistics">
   <div class="stat"><span class="sv" id="sF">0</span><span class="sl">Images</span></div>
   <div class="stat"><span class="sv" id="sO">—</span><span class="sl">Total Size</span></div>
   <div class="stat"><span class="sv" id="sC">—</span><span class="sl">After Squeeze</span></div>
-  <div class="stat"><span class="sv" id="sS">—</span><span class="sl">Sats Saved*</span></div>
+  <div class="stat"><span class="sv" id="sB">—</span><span class="sl">Bytes Saved</span></div>
+  <div class="stat"><span class="sv" id="sS" style="color:var(--yw)">—</span><span class="sl">Sats Saved*</span></div>
 </div>
 
 <!-- SETTINGS -->
@@ -512,12 +517,27 @@ footer a:hover{text-decoration:underline}
 <div class="isec" id="s-deploy">
   <div class="ih" onclick="tS('s-deploy')"><span class="iht">📖 How to Inscribe on Bitcoin L1</span><span class="iar">▼</span></div>
   <div class="ib">
-    <div class="ds"><div class="dn">1</div><div><div class="dt">Squeeze Your Images First</div><div class="db">Upload your images above, set your target KB, and click <strong>⚡ Squeeze All</strong>. SatSqueeze reduces your file size while keeping full resolution. Every KB saved = sats saved on inscription fees.</div></div></div>
-    <div class="ds"><div class="dn">2</div><div><div class="dt">Download Your Squeezed Images</div><div class="db">Click <strong>↓ Download All</strong> to save your optimised images. These are your inscription-ready files — smaller bytes, same quality, ready to go on-chain.</div></div></div>
-    <div class="ds"><div class="dn">3</div><div><div class="dt">Install OPWallet (if you haven't)</div><div class="db">OPWallet is the official Bitcoin wallet for OP_NET. Install from the <a href="https://chromewebstore.google.com/detail/opwallet/pmbjpcmaaladnfpacpmhmnfmpklgbdjb" target="_blank" rel="noopener">Chrome Web Store</a>. Choose <strong>Taproot (P2TR)</strong> address type — required for all OP_NET inscriptions. Store your seed phrase safely offline.</div></div></div>
-    <div class="ds"><div class="dn">4</div><div><div class="dt">Go to OPTools to Inscribe</div><div class="db">OPTools is the official OP_NET inscription platform. Upload your squeezed images there and inscribe them directly onto Bitcoin L1. Your images are written into Taproot witness data — permanent, on-chain, forever.</div><div class="cb">👉  <em><a href="https://optools.org" target="_blank" rel="noopener" style="color:var(--s)">https://optools.org</a></em></div></div></div>
-    <div class="ds"><div class="dn">5</div><div><div class="dt">Verify on OPScan</div><div class="db">After inscribing, check your transaction on OPScan — the official OP_NET block explorer. Your inscription hash, block height, and wallet address are all permanently recorded on Bitcoin L1.</div><div class="cb">👉  <em><a href="https://opscan.org" target="_blank" rel="noopener" style="color:var(--s)">https://opscan.org</a></em></div></div></div>
-    <div class="ds"><div class="dn">6</div><div><div class="dt">Your NFT Is Now on Bitcoin Forever</div><div class="db">Secured by Bitcoin proof-of-work. No server can take it down. No company can delete it. Every byte you saved with SatSqueeze was a sat you kept in your wallet. That's the whole point. 🟠</div></div></div>
+    <div class="ds"><div class="dn">1</div><div><div class="dt">Squeeze Your Images First</div><div class="db">Upload your images above, set your target KB, and click <strong>⚡ Squeeze All</strong>. SatSqueeze reduces file size while keeping full resolution. Every KB saved = real sats saved on inscription fees.</div></div></div>
+    <div class="ds"><div class="dn">2</div><div><div class="dt">Download Your Optimised Images</div><div class="db">Click <strong>↓ Download All</strong> to save your inscription-ready files. Smaller bytes, same quality, ready to go on-chain.</div></div></div>
+    <div class="ds"><div class="dn">3</div><div><div class="dt">Choose Your Inscription Platform</div><div class="db">These are the proven tools for inscribing images onto Bitcoin:</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+        <a href="https://gamma.io" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:var(--b2);border:1px solid var(--d2);border-radius:var(--r2);padding:12px 14px;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='var(--s)'" onmouseout="this.style.borderColor='var(--d2)'">
+          <span style="font-size:1.4rem">🟠</span>
+          <div><div style="font-size:.82rem;font-weight:700;color:var(--t0);margin-bottom:2px">gamma.io — Recommended</div><div style="font-family:var(--m);font-size:.62rem;color:var(--t2)">Simple drag-and-drop. Supports bulk minting for whole collections. Most popular Bitcoin inscription platform.</div></div>
+        </a>
+        <a href="https://unisat.io" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:var(--b2);border:1px solid var(--d2);border-radius:var(--r2);padding:12px 14px;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='var(--s)'" onmouseout="this.style.borderColor='var(--d2)'">
+          <span style="font-size:1.4rem">⚡</span>
+          <div><div style="font-size:.82rem;font-weight:700;color:var(--t0);margin-bottom:2px">unisat.io — Batch Collections</div><div style="font-family:var(--m);font-size:.62rem;color:var(--t2)">Best for large NFT collections. Supports batch inscription of hundreds of images at once.</div></div>
+        </a>
+        <a href="https://optools.org" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:var(--b2);border:1px solid var(--d2);border-radius:var(--r2);padding:12px 14px;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='var(--s)'" onmouseout="this.style.borderColor='var(--d2)'">
+          <span style="font-size:1.4rem">₿</span>
+          <div><div style="font-size:.82rem;font-weight:700;color:var(--t0);margin-bottom:2px">optools.org — OP_NET Native</div><div style="font-family:var(--m);font-size:.62rem;color:var(--t2)">Official OP_NET utility platform. For deploying OP_721 NFT collections directly on Bitcoin L1 via OP_NET smart contracts.</div></div>
+        </a>
+      </div>
+    </div></div>
+    <div class="ds"><div class="dn">4</div><div><div class="dt">Why Compression Authenticity Matters</div><div class="db">When you inscribe a compressed image on Bitcoin, it lives there forever — unchanged, immutable. The on-chain receipt SatSqueeze can sign via OPWallet proves that your specific image, at its specific byte size, was processed at a specific Bitcoin block height. For collectors and creators, this is cryptographic proof of your work — especially useful for large collections where provenance and authenticity matter. No one can claim your squeezed image was altered after the fact.</div></div></div>
+    <div class="ds"><div class="dn">5</div><div><div class="dt">Verify on OPScan</div><div class="db">After inscribing, check your transaction on OPScan. Your inscription hash, block height, and wallet address are permanently recorded on Bitcoin L1.</div><div class="cb">👉  <em><a href="https://opscan.org" target="_blank" rel="noopener" style="color:var(--s)">https://opscan.org</a></em></div></div></div>
+    <div class="ds"><div class="dn">6</div><div><div class="dt">Your NFT Lives on Bitcoin Forever</div><div class="db">Secured by Bitcoin proof-of-work. No server can take it down. No company can delete it. Every byte you saved with SatSqueeze was a sat you kept. That's the whole point. 🟠</div></div></div>
   </div>
 </div>
 
@@ -848,11 +868,15 @@ function updS(){
   var act=_f.filter(Boolean),done=_r.filter(Boolean);
   var oT=act.reduce(function(s,f){return s+f.size},0);
   var cT=done.reduce(function(s,r){return s+r.blob.size},0);
-  var svs=done.length?Math.max(0,Math.round((oT-cT)*SVB)):null;
-  sT('sF',act.length||'0');sT('sO',oT>0?fB(oT):'—');sT('sC',cT>0?fB(cT):'—');
+  var svb=oT-cT;
+  var svs=done.length?Math.max(0,Math.round(svb*SVB)):null;
+  sT('sF',act.length||'0');
+  sT('sO',oT>0?fB(oT):'—');
+  sT('sC',cT>0?fB(cT):'—');
+  sT('sB',svb>0?fB(svb):'—');
   sT('sS',svs!==null&&done.length?'~'+nF(svs):'—');
   sT('sbO',oT>0?fB(oT):'—');sT('sbC',cT>0?fB(cT):'—');
-  sT('sbB',oT>cT?fB(oT-cT):'—');sT('sbS',svs!==null&&done.length?'~'+nF(svs)+' sats':'—');
+  sT('sbB',svb>0?fB(svb):'—');sT('sbS',svs!==null&&done.length?'~'+nF(svs)+' sats':'—');
 }
 function sp(kb){var e=$i('kb');if(e)e.value=kb;document.querySelectorAll('.pr').forEach(function(b){var v=parseInt(b.textContent,10);b.classList.toggle('on',v===kb||(kb===1000&&b.textContent==='1 MB')||(kb===4000&&b.textContent==='4 MB'))});updEst()}
 function fB(n){n=Number(n);if(!n||isNaN(n))return'0B';if(n<1024)return n+'B';if(n<1048576)return(n/1024).toFixed(1)+'KB';return(n/1048576).toFixed(2)+'MB'}
