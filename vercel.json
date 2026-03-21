@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/satsqueeze-v7.html" }
+  ]
+}
