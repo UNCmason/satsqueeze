@@ -158,7 +158,12 @@ option{background:var(--b2);color:var(--t0)}
 .dz:hover .dzg,.dz.ov .dzg{opacity:1}
 .dz:hover,.dz.ov{border-color:var(--s)}
 .dzi{position:relative;z-index:1}
-.dz-ic{font-size:2.2rem;display:block;margin-bottom:10px;line-height:1;user-select:none}
+/* dropzone bitcoin icon */
+.btc-drop{width:72px;height:72px;margin:0 auto 14px;display:block}
+.btc-svg{width:100%;height:100%;filter:drop-shadow(0 0 14px rgba(247,147,26,.5));
+  transition:transform .3s ease;display:block}
+.dz:hover .btc-svg{animation:btcSpin .8s ease forwards}
+@keyframes btcSpin{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(20deg) scale(1.08)}100%{transform:rotate(0deg) scale(1)}}
 .dz-t{font-size:1.1rem;font-weight:800;margin-bottom:6px}
 .dz-s{font-family:var(--m);font-size:.7rem;color:var(--t2);line-height:1.8}
 .dz-s strong{color:var(--s)}
@@ -333,10 +338,10 @@ footer a:hover{text-decoration:underline}
 <div class="pg">
 
 <!-- NETBAR -->
-<div class="nb t" id="nb">
+<div class="nb m" id="nb">
   <span class="ndot"></span>
-  <span id="nbl">TESTNET · Regtest · No real sats at risk</span>
-  <button class="nsw" onclick="swNet()" type="button" id="nsw">Switch to Mainnet</button>
+  <span id="nbl">MAINNET · Real Bitcoin · Real satoshis</span>
+  <button class="nsw" onclick="swNet()" type="button" id="nsw">Switch to Testnet</button>
 </div>
 
 <!-- NAV -->
@@ -359,7 +364,7 @@ footer a:hover{text-decoration:underline}
 
 <!-- HERO -->
 <div class="hero">
-  <div class="htag">⚡ Bitcoin L1 · OP_NET · Taproot · Satoshi-Native</div>
+  <div class="htag">Bitcoin L1 · OP_NET · Taproot · Satoshi-Native</div>
   <h1>Fewer Bytes.<br><em>Fewer Sats.</em></h1>
   <p class="hero-sub">Every inscription byte costs satoshis. SatSqueeze compresses your images to the exact KB you need — same resolution, fewer sats spent.</p>
   <div class="sbn">
@@ -374,7 +379,7 @@ footer a:hover{text-decoration:underline}
 <div class="wp" id="wp">
   <div class="wa" id="wa">—</div>
   <div class="wb2">Bal: <strong id="wbal">—</strong> BTC</div>
-  <span class="wnb t" id="wnb">TESTNET</span>
+  <span class="wnb m" id="wnb">MAINNET</span>
 </div>
 
 <!-- STATS -->
@@ -422,9 +427,16 @@ footer a:hover{text-decoration:underline}
 <div class="dz" id="dz">
   <div class="dzg"></div>
   <div class="dzi">
-    <span class="dz-ic" aria-hidden="true">🟠</span>
+    <!-- Rotating Bitcoin SVG logo — no emoji -->
+    <div class="btc-drop" aria-hidden="true">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="btc-svg">
+        <circle cx="50" cy="50" r="48" fill="#F7931A"/>
+        <text x="50" y="67" text-anchor="middle" font-size="58" font-weight="900"
+          font-family="Georgia,serif" fill="#000" letter-spacing="-2">₿</text>
+      </svg>
+    </div>
     <div class="dz-t">Drop Inscription Images Here</div>
-    <p class="dz-s">JPG · PNG · WebP · GIF — any size<br><strong>Batch your whole collection</strong> — squeeze them all at once<br>Click any thumbnail after squeezing to compare before / after</p>
+    <p class="dz-s">JPG · PNG · WebP · GIF — any size<br><strong>Up to 50 images free</strong> · Unlimited with Batch Pass<br>Click any thumbnail after squeezing to compare</p>
     <button class="br" onclick="event.stopPropagation();document.getElementById('fi').click()" type="button">Select Images</button>
     <input type="file" id="fi" accept="image/*" multiple>
   </div>
@@ -447,45 +459,98 @@ footer a:hover{text-decoration:underline}
 
 <!-- ACTIONS -->
 <div class="acts">
-  <button class="btn-p" id="bSq" onclick="sqAll()" disabled type="button">⚡ Squeeze All</button>
-  <button class="btn-s" id="bDl" onclick="dlAll()" disabled type="button">↓ Download All</button>
+  <button class="btn-p" id="bSq" onclick="sqAll()" disabled type="button">// Squeeze All</button>
+  <button class="btn-s" id="bDl" onclick="dlAll()" disabled type="button" title="Connect OPWallet to download">↓ Download (OPWallet required)</button>
   <button class="btn-g"         onclick="clr()"            type="button">Clear</button>
+</div>
+
+<!-- WALLET GATE — shows when download attempted without wallet -->
+<div id="wGate" style="display:none;animation:fd .3s ease">
+  <div style="background:linear-gradient(135deg,rgba(247,147,26,.08),rgba(247,147,26,.02));border:2px solid rgba(247,147,26,.3);border-radius:var(--r);padding:20px 20px;margin-bottom:12px;text-align:center">
+    <div style="font-size:1.8rem;margin-bottom:10px;font-family:var(--m);color:var(--s);font-weight:700">[ LOCKED ]</div>
+    <div style="font-size:1rem;font-weight:800;margin-bottom:8px;color:var(--t0)">Connect OPWallet to Download</div>
+    <div style="font-size:.78rem;color:var(--t1);line-height:1.65;margin-bottom:16px;max-width:420px;margin-left:auto;margin-right:auto">SatSqueeze is a Bitcoin L1 dApp. Connecting your OPWallet proves you are a real Bitcoin user — and lets you sign an on-chain receipt of your compression work. Your wallet is your identity on Bitcoin.</div>
+    <button onclick="cW()" type="button"
+      style="background:var(--s);color:#000;font-family:var(--m);font-size:.75rem;font-weight:700;
+      letter-spacing:1.5px;text-transform:uppercase;padding:14px 28px;border:none;
+      border-radius:var(--r);cursor:pointer;transition:background .15s;margin-bottom:10px;width:100%;max-width:320px;display:block;margin-left:auto;margin-right:auto">
+      ₿ Connect OPWallet to Download
+    </button>
+    <div style="font-family:var(--m);font-size:.6rem;color:var(--t2);line-height:1.6">
+      Don't have OPWallet? <a href="https://chromewebstore.google.com/detail/opwallet/pmbjpcmaaladnfpacpmhmnfmpklgbdjb" target="_blank" rel="noopener" style="color:var(--s)">Install free here</a> — choose Taproot (P2TR)
+    </div>
+  </div>
 </div>
 
 <!-- INSCRIBE CTA — shows after squeeze -->
 <div id="inscribeFlow" style="display:none;animation:fd .3s ease">
   <div style="background:linear-gradient(135deg,rgba(247,147,26,.07),rgba(247,147,26,.02));border:1px solid rgba(247,147,26,.2);border-radius:var(--r);padding:16px 18px;margin-bottom:12px">
-    <div style="font-size:.84rem;font-weight:800;margin-bottom:6px">🟠 Ready to Inscribe on Bitcoin L1?</div>
-    <div style="font-size:.72rem;color:var(--t1);line-height:1.6;margin-bottom:14px">Your images are squeezed and optimised. Download them, then head to <strong style="color:var(--s)">OPTools</strong> — the official OP_NET inscription tool — to inscribe them onto Bitcoin L1. Every byte you saved with SatSqueeze is a sat you keep.</div>
+    <div style="font-size:.84rem;font-weight:800;margin-bottom:6px;color:var(--s)">// Ready to Inscribe on Bitcoin L1</div>
+    <div style="font-size:.75rem;color:var(--t1);line-height:1.65;margin-bottom:14px">Your images are squeezed and ready. Connect OPWallet to download them, then take them to <strong style="color:var(--s)">gamma.io</strong> or <strong style="color:var(--s)">unisat.io</strong> to inscribe onto Bitcoin L1. Every byte saved with SatSqueeze is a sat you keep.</div>
     <div style="display:flex;gap:9px;flex-wrap:wrap">
-      <a href="https://optools.org" target="_blank" rel="noopener noreferrer"
-        style="flex:2;min-width:140px;display:flex;align-items:center;justify-content:center;gap:8px;
+      <a href="https://gamma.io" target="_blank" rel="noopener noreferrer"
+        style="flex:1;min-width:130px;display:flex;align-items:center;justify-content:center;gap:8px;
         background:var(--s);color:#000;font-family:var(--m);font-size:.68rem;font-weight:700;
         letter-spacing:1.5px;text-transform:uppercase;padding:13px;border-radius:var(--r);
         text-decoration:none;transition:background .15s">
-        ₿ Inscribe on Bitcoin via OPTools →
+        ₿ Inscribe via gamma.io →
       </a>
-      <a href="https://docs.opnet.org" target="_blank" rel="noopener noreferrer"
-        style="flex:1;min-width:110px;display:flex;align-items:center;justify-content:center;
-        background:none;color:var(--t0);font-family:var(--m);font-size:.62rem;font-weight:700;
+      <a href="https://unisat.io" target="_blank" rel="noopener noreferrer"
+        style="flex:1;min-width:130px;display:flex;align-items:center;justify-content:center;gap:8px;
+        background:none;color:var(--t0);font-family:var(--m);font-size:.68rem;font-weight:700;
         letter-spacing:1px;text-transform:uppercase;padding:13px;border-radius:var(--r);
         border:1px solid var(--d2);text-decoration:none;transition:border-color .15s">
-        📖 OP_NET Docs
+        Inscribe via unisat.io →
       </a>
     </div>
-    <div style="font-family:var(--m);font-size:.52rem;color:var(--t2);margin-top:10px;line-height:1.6">
-      💡 Workflow: SatSqueeze optimises your bytes → OPTools inscribes them on Bitcoin L1 → your NFT lives on-chain forever secured by proof-of-work.
+    <div style="font-family:var(--m);font-size:.58rem;color:var(--t2);margin-top:10px;line-height:1.6">
+      SatSqueeze optimises your bytes — download with OPWallet — inscribe on Bitcoin L1 forever.
     </div>
   </div>
 </div>
 
-<!-- ON-CHAIN -->
+<!-- BATCH PASS GATE — shows when user tries to add more than 50 images -->
+<div id="batchGate" style="display:none;animation:fd .3s ease">
+  <div style="background:linear-gradient(135deg,rgba(247,147,26,.07),rgba(247,147,26,.015));border:2px solid rgba(247,147,26,.25);border-radius:var(--r);padding:22px;margin-bottom:12px">
+    <div style="font-family:var(--m);font-size:.62rem;color:var(--s);letter-spacing:2px;margin-bottom:10px">// BATCH PASS REQUIRED</div>
+    <div style="font-size:.96rem;font-weight:800;margin-bottom:8px;color:var(--t0)">Unlimited Batch — <span id="passPrice">10,000 sats</span></div>
+    <div style="font-size:.76rem;color:var(--t1);line-height:1.65;margin-bottom:18px">You have reached the 50 image free limit. Unlock unlimited batch compression with a one-time payment of <strong style="color:var(--s)" id="passPriceInline">10,000 sats</strong> to the SatSqueeze wallet. Payment is verified on-chain via the Bitcoin mempool — no fake TX IDs can pass.</div>
+    <!-- Payment address -->
+    <div style="font-family:var(--m);font-size:.6rem;color:var(--t2);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase">Send exactly <span id="passPriceLabel">10,000 sats</span> to:</div>
+    <div id="payAddr" style="font-family:var(--m);font-size:.68rem;color:var(--s);background:var(--b0);border:1px solid var(--d2);border-radius:var(--r2);padding:11px 14px;margin-bottom:14px;word-break:break-all;cursor:pointer;transition:border-color .15s" onclick="copyAddr()" title="Click to copy">
+      bc1qm0gghvsguclnwtjf73t4zauf4yy89q74x3jtpp
+      <span style="font-size:.55rem;color:var(--t2);margin-left:8px">[click to copy]</span>
+    </div>
+
+    <!-- TX verification -->
+    <div style="font-family:var(--m);font-size:.6rem;color:var(--t2);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase">After sending, paste your Transaction ID:</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <input type="text" id="txInput" placeholder="Paste Bitcoin TX ID here..."
+        style="flex:1;min-width:200px;background:var(--b2);border:1px solid var(--d2);border-radius:var(--r2);
+        color:var(--t0);font-family:var(--m);font-size:.72rem;padding:10px 12px;outline:none;
+        transition:border-color .15s" onfocus="this.style.borderColor='var(--s)'" onblur="this.style.borderColor='var(--d2)'">
+      <button onclick="verifyPayment()" type="button"
+        style="background:var(--s);color:#000;font-family:var(--m);font-size:.7rem;font-weight:700;
+        letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border:none;
+        border-radius:var(--r2);cursor:pointer;white-space:nowrap;transition:background .15s">
+        Verify on Bitcoin
+      </button>
+    </div>
+
+    <!-- Verification status -->
+    <div id="verifyStatus" style="font-family:var(--m);font-size:.68rem;padding:8px 12px;border-radius:var(--r2);display:none"></div>
+
+    <div style="font-family:var(--m);font-size:.58rem;color:var(--t2);margin-top:12px;line-height:1.65;border-top:1px solid var(--d1);padding-top:12px">
+      Payment is verified directly on the Bitcoin blockchain via mempool.space. A real confirmed transaction to the SatSqueeze address is required — no other TX will pass. Your Batch Pass unlocks unlimited images for this session.
+    </div>
+  </div>
+</div>
 <div class="oc" id="oc">
-  <div class="oct">🔗 Sign Receipt on Bitcoin L1 <span style="font-size:.58rem;color:var(--t2);font-weight:400">(optional)</span></div>
+  <div class="oct">// Sign Receipt on Bitcoin L1 <span style="font-size:.58rem;color:var(--t2);font-weight:400">(optional)</span></div>
   <div class="ocs">Stamp your compression receipt into Bitcoin Taproot witness data via OP_NET. Records SHA-256 hash, bytes saved, and block height — permanent proof on-chain. <strong style="color:var(--ok)">SatSqueeze charges no fee.</strong></div>
-  <div class="ocn t" id="ocn">🧪 TESTNET · Regtest tBTC — no real satoshis at risk</div>
+  <div class="ocn m" id="ocn">MAINNET · Real satoshis. Sign carefully.</div>
   <div class="rc" id="rc">Computing SHA-256 receipt hash…</div>
-  <button class="btn-sg" id="bSg" onclick="sign()" disabled type="button">🔗 Sign Receipt on Bitcoin L1</button>
+  <button class="btn-sg" id="bSg" onclick="sign()" disabled type="button">// Sign Receipt on Bitcoin L1</button>
   <div class="txb" id="txb">
     <div class="txr"><span class="txk">STATUS</span><span class="txv">✓ SIGNED</span></div>
     <div class="txr"><span class="txk">PROOF</span><span class="txv" id="txp">—</span></div>
@@ -499,7 +564,7 @@ footer a:hover{text-decoration:underline}
 <div class="isecs">
 
 <div class="isec op" id="s-how">
-  <div class="ih" onclick="tS('s-how')"><span class="iht">⚡ How It Works</span><span class="iar">▼</span></div>
+  <div class="ih" onclick="tS('s-how')"><span class="iht">// How It Works</span><span class="iar">▼</span></div>
   <div class="ib on">
     <div class="steps">
       <div class="step"><div class="sn">01 // UPLOAD</div><div class="st">Drop Your Images</div><div class="sb">Upload any format. Batch your whole collection. Zero bytes leave your device — 100% local processing.</div></div>
@@ -515,18 +580,18 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <div class="isec" id="s-deploy">
-  <div class="ih" onclick="tS('s-deploy')"><span class="iht">📖 How to Inscribe on Bitcoin L1</span><span class="iar">▼</span></div>
+  <div class="ih" onclick="tS('s-deploy')"><span class="iht">// How to Inscribe on Bitcoin L1</span><span class="iar">▼</span></div>
   <div class="ib">
-    <div class="ds"><div class="dn">1</div><div><div class="dt">Squeeze Your Images First</div><div class="db">Upload your images above, set your target KB, and click <strong>⚡ Squeeze All</strong>. SatSqueeze reduces file size while keeping full resolution. Every KB saved = real sats saved on inscription fees.</div></div></div>
+    <div class="ds"><div class="dn">1</div><div><div class="dt">Squeeze Your Images First</div><div class="db">Upload your images above, set your target KB, and click <strong>// Squeeze All</strong>. SatSqueeze reduces file size while keeping full resolution. Every KB saved = real sats saved on inscription fees.</div></div></div>
     <div class="ds"><div class="dn">2</div><div><div class="dt">Download Your Optimised Images</div><div class="db">Click <strong>↓ Download All</strong> to save your inscription-ready files. Smaller bytes, same quality, ready to go on-chain.</div></div></div>
     <div class="ds"><div class="dn">3</div><div><div class="dt">Choose Your Inscription Platform</div><div class="db">These are the proven tools for inscribing images onto Bitcoin:</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
         <a href="https://gamma.io" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:var(--b2);border:1px solid var(--d2);border-radius:var(--r2);padding:12px 14px;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='var(--s)'" onmouseout="this.style.borderColor='var(--d2)'">
-          <span style="font-size:1.4rem">🟠</span>
+          <span style="font-family:var(--m);font-size:.7rem;color:var(--s);font-weight:700">[ ₿ ]</span>
           <div><div style="font-size:.82rem;font-weight:700;color:var(--t0);margin-bottom:2px">gamma.io — Recommended</div><div style="font-family:var(--m);font-size:.62rem;color:var(--t2)">Simple drag-and-drop. Supports bulk minting for whole collections. Most popular Bitcoin inscription platform.</div></div>
         </a>
         <a href="https://unisat.io" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:var(--b2);border:1px solid var(--d2);border-radius:var(--r2);padding:12px 14px;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='var(--s)'" onmouseout="this.style.borderColor='var(--d2)'">
-          <span style="font-size:1.4rem">⚡</span>
+          <span style="font-family:var(--m);font-size:.7rem;color:var(--s);font-weight:700">[ ₿ ]</span>
           <div><div style="font-size:.82rem;font-weight:700;color:var(--t0);margin-bottom:2px">unisat.io — Batch Collections</div><div style="font-family:var(--m);font-size:.62rem;color:var(--t2)">Best for large NFT collections. Supports batch inscription of hundreds of images at once.</div></div>
         </a>
         <a href="https://optools.org" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:var(--b2);border:1px solid var(--d2);border-radius:var(--r2);padding:12px 14px;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='var(--s)'" onmouseout="this.style.borderColor='var(--d2)'">
@@ -537,24 +602,24 @@ footer a:hover{text-decoration:underline}
     </div></div>
     <div class="ds"><div class="dn">4</div><div><div class="dt">Why Compression Authenticity Matters</div><div class="db">When you inscribe a compressed image on Bitcoin, it lives there forever — unchanged, immutable. The on-chain receipt SatSqueeze can sign via OPWallet proves that your specific image, at its specific byte size, was processed at a specific Bitcoin block height. For collectors and creators, this is cryptographic proof of your work — especially useful for large collections where provenance and authenticity matter. No one can claim your squeezed image was altered after the fact.</div></div></div>
     <div class="ds"><div class="dn">5</div><div><div class="dt">Verify on OPScan</div><div class="db">After inscribing, check your transaction on OPScan. Your inscription hash, block height, and wallet address are permanently recorded on Bitcoin L1.</div><div class="cb">👉  <em><a href="https://opscan.org" target="_blank" rel="noopener" style="color:var(--s)">https://opscan.org</a></em></div></div></div>
-    <div class="ds"><div class="dn">6</div><div><div class="dt">Your NFT Lives on Bitcoin Forever</div><div class="db">Secured by Bitcoin proof-of-work. No server can take it down. No company can delete it. Every byte you saved with SatSqueeze was a sat you kept. That's the whole point. 🟠</div></div></div>
+    <div class="ds"><div class="dn">6</div><div><div class="dt">Your NFT Lives on Bitcoin Forever</div><div class="db">Secured by Bitcoin proof-of-work. No server can take it down. No company can delete it. Every byte you saved with SatSqueeze was a sat you kept. That's the whole point.</div></div></div>
   </div>
 </div>
 
 <div class="isec" id="s-about">
-  <div class="ih" onclick="tS('s-about')"><span class="iht">🟠 About SatSqueeze</span><span class="iar">▼</span></div>
+  <div class="ih" onclick="tS('s-about')"><span class="iht">// About SatSqueeze</span><span class="iar">▼</span></div>
   <div class="ib">
     <div class="ag">
       <div class="ac"><span class="ai">₿</span><div class="at2">One Chain. One Truth.</div><div class="ab">Every inscription on OP_NET lives on actual Bitcoin L1 — Taproot witness data secured by proof-of-work. No sidechain, no bridge. SatSqueeze helps you write fewer bytes onto that chain.</div></div>
-      <div class="ac"><span class="ai">🔒</span><div class="at2">100% Private</div><div class="ab">All compression runs locally via the Canvas API. Images never leave your device. No server, no upload, no account, no tracking.</div></div>
-      <div class="ac"><span class="ai">⚡</span><div class="at2">Satoshi-Native Logic</div><div class="ab">Cost = bytes × sat/vByte. SatSqueeze targets bytes directly. Fewer bytes inscribed = fewer satoshis spent — at the exact same resolution.</div></div>
-      <div class="ac"><span class="ai">🎯</span><div class="at2">Resolution Untouched</div><div class="ab">Pixel dimensions never change. A 4K image stays 4K — only the encoding quality adjusts to hit your byte target.</div></div>
+      <div class="ac"><span class="ai" style="font-family:var(--m);font-size:.7rem;color:var(--s)">[ PRIVATE ]</span><div class="at2">100% Private</div><div class="ab">All compression runs locally via the Canvas API. Images never leave your device. No server, no upload, no account, no tracking.</div></div>
+      <div class="ac"><span class="ai" style="font-family:var(--m);font-size:.7rem;color:var(--s)">[ SAT/VBYTE ]</span><div class="at2">Satoshi-Native Logic</div><div class="ab">Cost = bytes × sat/vByte. SatSqueeze targets bytes directly. Fewer bytes inscribed = fewer satoshis spent — at the exact same resolution.</div></div>
+      <div class="ac"><span class="ai" style="font-family:var(--m);font-size:.7rem;color:var(--s)">[ RESOLUTION ]</span><div class="at2">Resolution Untouched</div><div class="ab">Pixel dimensions never change. A 4K image stays 4K — only the encoding quality adjusts to hit your byte target.</div></div>
     </div>
   </div>
 </div>
 
 <div class="isec" id="s-faq">
-  <div class="ih" onclick="tS('s-faq')"><span class="iht">💬 FAQ</span><span class="iar">▼</span></div>
+  <div class="ih" onclick="tS('s-faq')"><span class="iht">// FAQ</span><span class="iar">▼</span></div>
   <div class="ib">
     <div class="faq">
       <div class="fi"><div class="fq" onclick="tF(this.parentElement)">Why does image size matter for Bitcoin inscriptions? <span class="fc">+</span></div><div class="fa">Bitcoin fees = satoshis per virtual byte (sat/vByte). Inscription images go into Taproot witness data — bigger file = heavier tx = more sats. At 10 sat/vByte, a 2MB image costs ~200,000 sats more than a 60KB version at the same resolution.</div></div>
@@ -574,11 +639,11 @@ footer a:hover{text-decoration:underline}
 <footer>
   <div class="fl">
     <a class="fb" href="https://opnet.org"           target="_blank" rel="noopener">₿ OP_NET</a>
-    <a class="fb" href="https://vibecode.finance"    target="_blank" rel="noopener">⚡ vibecode.finance</a>
-    <a class="fb" href="https://opscan.org"          target="_blank" rel="noopener">🔍 OPScan</a>
-    <a class="fb" href="https://faucet.opnet.org"    target="_blank" rel="noopener">🚰 Faucet</a>
-    <a class="fb" href="https://docs.opnet.org"      target="_blank" rel="noopener">📖 Docs</a>
-    <a class="fb" href="https://chromewebstore.google.com/detail/opwallet/pmbjpcmaaladnfpacpmhmnfmpklgbdjb" target="_blank" rel="noopener">🔗 OPWallet</a>
+    <a class="fb" href="https://vibecode.finance"    target="_blank" rel="noopener">vibecode.finance</a>
+    <a class="fb" href="https://opscan.org"          target="_blank" rel="noopener">OPScan</a>
+    <a class="fb" href="https://faucet.opnet.org"    target="_blank" rel="noopener">Testnet Faucet</a>
+    <a class="fb" href="https://docs.opnet.org"      target="_blank" rel="noopener">OP_NET Docs</a>
+    <a class="fb" href="https://chromewebstore.google.com/detail/opwallet/pmbjpcmaaladnfpacpmhmnfmpklgbdjb" target="_blank" rel="noopener">OPWallet</a>
   </div>
   <div>SatSqueeze — fewer bytes, fewer sats · Powered by <a href="https://opnet.org" target="_blank" rel="noopener">OP_NET</a> Bitcoin L1</div>
   <div>Images never leave your device · 100% client-side · No tracking · No ads</div>
@@ -619,10 +684,20 @@ footer a:hover{text-decoration:underline}
    One chain · Fewer bytes = fewer sats
    No external deps · system fonts · ~32KB */
 
-var VER='7.0.0', MB=150, MF=100, IT=16, QMN=.01, QTH=.006;
+var VER='8.0.0', MB=150, MF=100, IT=16, QMN=.01, QTH=.006;
 var BMS=60000, TMS=2800, SVB=10, OVH=200;
+var FREE_LIMIT=50;
+var PASS_SATS=10000;
+var PASS_SATS_TEST=1000;  // cheap for testnet testing
+var PAY_ADDR_MAIN='bc1qm0gghvsguclnwtjf73t4zauf4yy89q74x3jtpp';
+var PAY_ADDR_TEST='bcrt1pfcjlz3r7rvykpmg6gkmm6rfutyk0hz5vkvfqu04d6k9sn356z36s6sr9tp';
+// dynamic helpers
+function getPayAddr(){return _net==='t'?PAY_ADDR_TEST:PAY_ADDR_MAIN}
+function getPassSats(){return _net==='t'?PASS_SATS_TEST:PASS_SATS}
+function getMempoolAPI(txid){return _net==='t'?'https://mempool.space/testnet/api/tx/'+txid:'https://mempool.space/api/tx/'+txid}
 var _f=[],_r=[],_w={on:false,addr:null,bal:null};
-var _net='t',_sq=false,_cu=[],_tt=null;
+var _net='m',_sq=false,_cu=[],_tt=null;
+var _batchUnlocked=false;                       // true after payment verified
 
 function $i(i){try{return document.getElementById(i)}catch(e){return null}}
 function sT(i,v){var e=$i(i);if(e)e.textContent=String(v)}
@@ -639,9 +714,10 @@ function apN(n){
   var nb=$i('nb');if(nb)nb.className='nb '+(t?'t':'m');
   sT('nbl',t?'TESTNET · Regtest · No real sats at risk':'MAINNET · Real Bitcoin · Real satoshis');
   sT('nsw',t?'Switch to Mainnet':'Switch to Testnet');
-  var oc=$i('ocn');if(oc){oc.className='ocn '+(t?'t':'m');oc.textContent=t?'🧪 TESTNET · Regtest tBTC — no real satoshis at risk':'⚡ MAINNET · Real satoshis. Sign carefully.'}
+  var oc=$i('ocn');if(oc){oc.className='ocn '+(t?'t':'m');oc.textContent=t?'TESTNET · Regtest tBTC — no real satoshis at risk':'MAINNET · Real satoshis. Sign carefully.'}
   var wb=$i('wnb');if(wb){wb.className='wnb '+(t?'t':'m');wb.textContent=t?'TESTNET':'MAINNET'}
-  tC('txb','on',false);toast(t?'🧪 Switched to Testnet':'⚡ Switched to Mainnet','w');
+  tC('txb','on',false);toast(t?'Switched to Testnet':'Switched to Mainnet','w');
+  updBatchGate();
 }
 
 /* block ticker */
@@ -679,8 +755,10 @@ async function cW(){
     try{if(typeof p.getBalance==='function'){var b=await p.getBalance();if(b!=null){var c=(typeof b==='object'&&b.confirmed!=null)?Number(b.confirmed):Number(b);if(!isNaN(c))_w.bal=(c/1e8).toFixed(6)}}}catch(e){}
     sT('wa',trA(addr,10));sT('wbal',_w.bal||'—');
     tC('wp','on',true);tC('wd','on',true);sT('wbt',trA(addr,7));tC('wb','on',true);
+    // hide wallet gate if visible
+    var wg=$i('wGate');if(wg)wg.style.display='none';
     if(_r.some(function(r){return r!==null})){var bs=$i('bSg');if(bs)bs.disabled=false}
-    toast('✓ OPWallet connected · Taproot P2TR','ok');
+    toast('✓ OPWallet connected · Taproot P2TR · Ready to download','ok');
   }catch(e){
     var msg=(e&&e.message)?String(e.message):'';var lw=msg.toLowerCase();
     toast(e&&e.code===4001||lw.indexOf('reject')!==-1||lw.indexOf('denied')!==-1||lw.indexOf('cancel')!==-1?'Wallet connection rejected':'Wallet error — is OPWallet unlocked?','bad');
@@ -712,7 +790,16 @@ function aF(arr){
   var added=0;
   imgs.forEach(function(f){
     if(f.size>MB*1024*1024){toast(esc(f.name.slice(0,16))+' skipped (>'+MB+'MB)','w');return}
-    if(_f.filter(Boolean).length>=MF){toast('Max '+MF+' files','w');return}
+    // BATCH LIMIT — 50 free, unlimited after payment
+    var current=_f.filter(Boolean).length;
+    if(!_batchUnlocked&&current>=FREE_LIMIT){
+      // Show payment gate
+      var bg=$i('batchGate');
+      if(bg){bg.style.display='block';bg.scrollIntoView({behavior:'smooth',block:'nearest'})}
+      toast('Free limit is '+FREE_LIMIT+' images — get a Batch Pass to continue','w');
+      return;
+    }
+    if(_batchUnlocked&&current>=MF){toast('Max '+MF+' files per session','w');return}
     if(_f.some(function(x){return x&&x.name===f.name&&x.size===f.size}))return;
     var idx=_f.length;_f.push(f);_r.push(null);rI(idx,f);added++;
   });
@@ -744,8 +831,18 @@ function rI(idx,file){
   try{var rd=new FileReader();rd.onload=function(ev){var img=$i('th-'+idx);if(img&&ev.target&&ev.target.result)img.src=String(ev.target.result)};rd.onerror=function(){};rd.readAsDataURL(file)}catch(e){}
 }
 
-function rmI(idx){var e=$i('qi-'+idx);if(e)e.remove();_f[idx]=null;_r[idx]=null;updS();if(!_f.some(Boolean)){var bs=$i('bSq'),bd=$i('bDl');if(bs)bs.disabled=true;if(bd)bd.disabled=true;tC('oc','on',false);cC()}}
-function clr(){_f=[];_r=[];var q=$i('queue');if(q)q.innerHTML='';['bSq','bDl','bSg'].forEach(function(id){var e=$i(id);if(e)e.disabled=true});tC('oc','on',false);tC('txb','on',false);cC();updS();rvC();var ifl=$i('inscribeFlow');if(ifl)ifl.style.display='none'}
+function rmI(idx){
+  var e=$i('qi-'+idx);if(e)e.remove();
+  _f[idx]=null;_r[idx]=null;updS();
+  if(!_f.some(Boolean)){
+    var bs=$i('bSq'),bd=$i('bDl');
+    if(bs)bs.disabled=true;if(bd)bd.disabled=true;
+    tC('oc','on',false);cC();
+    var wg=$i('wGate');if(wg)wg.style.display='none';
+    var ifl=$i('inscribeFlow');if(ifl)ifl.style.display='none';
+  }
+}
+function clr(){_f=[];_r=[];var q=$i('queue');if(q)q.innerHTML='';['bSq','bDl','bSg'].forEach(function(id){var e=$i(id);if(e)e.disabled=true});tC('oc','on',false);tC('txb','on',false);cC();updS();rvC();var ifl=$i('inscribeFlow');if(ifl)ifl.style.display='none';var wg=$i('wGate');if(wg)wg.style.display='none';var bg=$i('batchGate');if(bg&&!_batchUnlocked)bg.style.display='none'}
 
 /* compression */
 async function sqAll(){
@@ -773,7 +870,7 @@ async function sqAll(){
   bldR();tC('oc','on',true);
   if(_w.on){var bsg=$i('bSg');if(bsg)bsg.disabled=false}
   var ifl=$i('inscribeFlow');if(ifl)ifl.style.display='block';
-  toast('⚡ Squeezed! Ready to inscribe on Bitcoin L1.','ok');
+  toast('Squeezed. Ready to inscribe on Bitcoin L1.','ok');
 }
 
 function cmpF(file,tb,fmt,idx){
@@ -843,15 +940,28 @@ async function sign(){
     else{proof='local:'+Date.now().toString(36).toUpperCase();toast('Wallet does not support signMessage — local receipt','w')}
     var bn=$i('bnum');sT('txp',proof||'—');sT('txbl',bn?bn.textContent:'—');sT('txn',_net==='t'?'TESTNET (Regtest)':'MAINNET');tC('txb','on',true);btn.textContent='✓ Receipt Signed';toast('✓ Receipt signed on Bitcoin L1','ok');
   }catch(e){
-    if(btn){btn.disabled=false;btn.textContent='🔗 Sign Receipt on Bitcoin L1'}
+    if(btn){btn.disabled=false;btn.textContent='// Sign Receipt on Bitcoin L1'}
     var msg2=(e&&e.message)?String(e.message):'';var lw=msg2.toLowerCase();
     toast(e&&e.code===4001||lw.indexOf('reject')!==-1||lw.indexOf('denied')!==-1?'Signing rejected':'Signing failed — OPWallet locked?','bad');
   }
 }
 
-/* download */
+/* download — gated behind OPWallet */
 async function dlAll(){
-  var done=_r.filter(Boolean);if(!done.length){toast('Nothing squeezed yet','w');return}
+  var done=_r.filter(Boolean);
+  if(!done.length){toast('Nothing squeezed yet','w');return}
+  // WALLET GATE — must connect OPWallet to download
+  if(!_w.on){
+    var wg=$i('wGate');
+    if(wg){
+      wg.style.display='block';
+      wg.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+    toast('Connect OPWallet to download your squeezed images','w');
+    return;
+  }
+  // Wallet connected — hide gate if visible
+  var wg=$i('wGate');if(wg)wg.style.display='none';
   if(done.length===1){dlB(done[0].blob,done[0].name);return}
   toast('Downloading '+done.length+' images…');
   for(var i=0;i<_r.length;i++){if(!_r[i])continue;await new Promise(function(res){setTimeout(res,180)});dlB(_r[i].blob,_r[i].name)}
@@ -886,12 +996,102 @@ function toast(msg,type){var t=$i('toast');if(!t)return;t.textContent=String(msg
 function tS(id){var s=$i(id);if(!s)return;var b=s.querySelector('.ib'),h=s.querySelector('.ih');var op=s.classList.contains('op');s.classList.toggle('op',!op);if(h)h.setAttribute('aria-expanded',String(!op));if(b)b.classList.toggle('on',!op)}
 function tF(el){if(!el)return;var a=el.querySelector('.fa'),op=el.classList.contains('op');el.classList.toggle('op',!op);if(a)a.classList.toggle('on',!op)}
 
-/* init */
+/* batch pass — copy address */
+function copyAddr(){
+  var addr=getPayAddr();
+  try{
+    navigator.clipboard.writeText(addr).then(function(){
+      toast('Address copied','ok');
+    }).catch(function(){toast(addr,'ok')});
+  }catch(e){toast(addr,'ok')}
+}
+
+/* update batch gate UI when network switches */
+function updBatchGate(){
+  var addr=getPayAddr();
+  var sats=getPassSats().toLocaleString()+' sats';
+  var pa=$i('payAddr');
+  if(pa)pa.innerHTML=addr+'<span style="font-size:.55rem;color:var(--t2);margin-left:8px">[click to copy]</span>';
+  ['passPrice','passPriceInline','passPriceLabel'].forEach(function(id){sT(id,sats)});
+}
+
+/* batch pass — verify payment on Bitcoin mempool */
+async function verifyPayment(){
+  var inp=$i('txInput');
+  var stat=$i('verifyStatus');
+  if(!inp||!stat)return;
+  var txid=inp.value.trim().replace(/\s/g,'');
+  if(!txid||txid.length<60||txid.length>65){
+    showVerifyStatus('Invalid TX ID — Bitcoin TX IDs are 64 hex characters','bad');return;
+  }
+  // Basic hex check
+  if(!/^[0-9a-fA-F]{64}$/.test(txid)){
+    showVerifyStatus('Invalid TX ID — must be 64 hex characters (0-9, a-f)','bad');return;
+  }
+  showVerifyStatus('Checking Bitcoin mempool…','info');
+  try{
+    var apiUrl=getMempoolAPI(txid);
+    var res=await fetch(apiUrl,{
+      method:'GET',headers:{'Accept':'application/json'},
+      signal:AbortSignal.timeout?AbortSignal.timeout(10000):undefined
+    });
+    if(!res.ok){
+      showVerifyStatus('TX not found — check the ID and make sure you are on the right network','bad');return;
+    }
+    var tx=await res.json();
+    if(!tx||!tx.vout||!Array.isArray(tx.vout)){
+      showVerifyStatus('Could not read TX data — try again','bad');return;
+    }
+    var confirmed=tx.status&&tx.status.confirmed;
+    var targetAddr=getPayAddr();
+    var requiredSats=getPassSats();
+    var found=false;
+    tx.vout.forEach(function(out){
+      if(out&&out.scriptpubkey_address===targetAddr&&out.value>=requiredSats){
+        found=true;
+      }
+    });
+    if(!found){
+      showVerifyStatus('Payment not found — TX must send at least '+requiredSats.toLocaleString()+' sats to the SatSqueeze address on '+(_net==='t'?'Regtest':'Mainnet'),'bad');return;
+    }
+    if(!confirmed){
+      showVerifyStatus('TX found but not yet confirmed — wait for 1 confirmation and try again','warn');return;
+    }
+    // PAYMENT VERIFIED
+    _batchUnlocked=true;
+    var bg=$i('batchGate');if(bg)bg.style.display='none';
+    showVerifyStatus('','ok');
+    toast('Batch Pass unlocked — unlimited images ready','ok');
+    // Update dropzone text
+    var dzs=document.querySelector('.dz-s');
+    if(dzs)dzs.innerHTML='JPG · PNG · WebP · GIF — any size<br><strong style="color:var(--ok)">Batch Pass active — unlimited images</strong><br>Click any thumbnail after squeezing to compare';
+  }catch(e){
+    var msg=(e&&e.message)?String(e.message):'';
+    if(msg.indexOf('abort')!==-1||msg.indexOf('timeout')!==-1){
+      showVerifyStatus('Request timed out — check your connection and try again','bad');
+    } else {
+      showVerifyStatus('Verification error — try again','bad');
+    }
+  }
+}
+
+function showVerifyStatus(msg,type){
+  var el=$i('verifyStatus');
+  if(!el)return;
+  if(!msg){el.style.display='none';return}
+  el.style.display='block';
+  el.textContent=msg;
+  var bg=type==='ok'?'rgba(63,184,95,.08)':type==='warn'?'rgba(219,168,32,.08)':'rgba(204,68,68,.08)';
+  var bc=type==='ok'?'rgba(63,184,95,.2)':type==='warn'?'rgba(219,168,32,.2)':'rgba(204,68,68,.2)';
+  var col=type==='ok'?'var(--ok)':type==='warn'?'var(--yw)':type==='info'?'var(--t1)':'var(--er)';
+  el.style.background=bg;el.style.border='1px solid '+bc;el.style.color=col;
+}
 (function(){
   var ke=$i('kb');
   if(ke){ke.addEventListener('blur',function(){var v=parseFloat(ke.value);if(isNaN(v)||v<1)ke.value=1;if(v>50000)ke.value=50000;updEst()})}
   document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.target.tagName==='INPUT')e.preventDefault()});
   sp(60);
+  updBatchGate();
 })();
 </script>
 </body>
