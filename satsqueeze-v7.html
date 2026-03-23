@@ -718,10 +718,13 @@ function apN(n){
   var oc=$i('ocn');if(oc){oc.className='ocn '+(t?'t':'m');oc.textContent=t?'TESTNET · Regtest tBTC — no real satoshis at risk':'MAINNET · Real satoshis. Sign carefully.'}
   var wb=$i('wnb');if(wb){wb.className='wnb '+(t?'t':'m');wb.textContent=t?'TESTNET':'MAINNET'}
   tC('txb','on',false);toast(t?'Switched to Testnet':'Switched to Mainnet','w');
+  // Always reset batch unlock on network switch — pass is network-specific
+  _batchUnlocked=false;
+  updDzText();
   updBatchGate();
-  fbk(); // refresh block for new network
-  // Testnet — auto-unlock batch pass so testing is free
-  if(t&&!_batchUnlocked){activateBatchPass();toast('Testnet mode: Batch Pass unlocked for testing','ok');}
+  fbk();
+  // Testnet only — auto-unlock batch pass for free testing
+  if(t){activateBatchPass();toast('Testnet: Batch Pass unlocked for testing','ok');}
 }
 
 /* block ticker — uses correct network endpoint */
