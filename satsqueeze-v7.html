@@ -680,9 +680,10 @@ footer a:hover{text-decoration:underline}
 
 <script>
 'use strict';
-/* SatSqueeze v7 · Lean · Fast · Ship-ready
-   One chain · Fewer bytes = fewer sats
-   No external deps · system fonts · ~32KB */
+/* SatSqueeze v8 · Final · Ship-ready · Bitcoin L1
+   Fewer bytes = fewer sats · OP_NET · OPWallet
+   Wallet-gated download · Wallet-tied free limit
+   On-chain payment verification via mempool.space */
 
 var VER='8.0.0', MB=150, MF=100, IT=16, QMN=.01, QTH=.006;
 var BMS=60000, TMS=2800, SVB=10, OVH=200;
@@ -718,14 +719,16 @@ function apN(n){
   var wb=$i('wnb');if(wb){wb.className='wnb '+(t?'t':'m');wb.textContent=t?'TESTNET':'MAINNET'}
   tC('txb','on',false);toast(t?'Switched to Testnet':'Switched to Mainnet','w');
   updBatchGate();
+  fbk(); // refresh block for new network
 }
 
-/* block ticker */
+/* block ticker — uses correct network endpoint */
 function fbk(){
   var ctrl=null,tmr=null;
+  var url=_net==='t'?'https://mempool.space/testnet/api/blocks/tip/height':'https://mempool.space/api/blocks/tip/height';
   try{
     if(typeof AbortController!=='undefined'){ctrl=new AbortController();tmr=setTimeout(function(){ctrl.abort()},8000)}
-    fetch('https://mempool.space/api/blocks/tip/height',{method:'GET',headers:{'Accept':'text/plain'},signal:ctrl?ctrl.signal:undefined})
+    fetch(url,{method:'GET',headers:{'Accept':'text/plain'},signal:ctrl?ctrl.signal:undefined})
       .then(function(r){if(tmr)clearTimeout(tmr);if(!r.ok)return;return r.text()})
       .then(function(t){if(t){var n=parseInt(t.trim(),10);if(!isNaN(n)&&n>0)sT('bnum',n.toLocaleString())}})
       .catch(function(){if(tmr)clearTimeout(tmr)});
@@ -758,13 +761,25 @@ async function cW(){
     // hide wallet gate if visible
     var wg=$i('wGate');if(wg)wg.style.display='none';
     if(_r.some(function(r){return r!==null})){var bs=$i('bSg');if(bs)bs.disabled=false}
-    toast('✓ OPWallet connected · Taproot P2TR · Ready to download','ok');
+    toast('OPWallet connected · Taproot P2TR · Ready to download','ok');
+    // Update dropzone to show free slots remaining
+    updDzText();
+    // Check if this wallet already has a valid Batch Pass stored
+    checkStoredPass(addr);
   }catch(e){
     var msg=(e&&e.message)?String(e.message):'';var lw=msg.toLowerCase();
     toast(e&&e.code===4001||lw.indexOf('reject')!==-1||lw.indexOf('denied')!==-1||lw.indexOf('cancel')!==-1?'Wallet connection rejected':'Wallet error — is OPWallet unlocked?','bad');
   }
 }
-function dcW(){_w={on:false,addr:null,bal:null};tC('wp','on',false);tC('wd','on',false);sT('wbt','Connect OPWallet');tC('wb','on',false);var bs=$i('bSg');if(bs)bs.disabled=true;toast('Wallet disconnected')}
+function dcW(){
+  _w={on:false,addr:null,bal:null};
+  _batchUnlocked=false;  // re-lock on disconnect — must reconnect to restore pass
+  tC('wp','on',false);tC('wd','on',false);
+  sT('wbt','Connect OPWallet');tC('wb','on',false);
+  var bs=$i('bSg');if(bs)bs.disabled=true;
+  updDzText();
+  toast('Wallet disconnected');
+}
 function trA(a,n){n=Math.max(4,n||8);if(!a)return'—';if(a.length<=n+6)return a;return a.slice(0,n)+'…'+a.slice(-5)}
 
 /* modals */
@@ -787,21 +802,32 @@ function aF(arr){
   if(!arr||!arr.length)return;
   var imgs=arr.filter(function(f){return f&&f.type&&f.type.indexOf('image/')===0});
   if(!imgs.length){toast('No image files found','bad');return}
+
+  // Must connect wallet before uploading anything
+  if(!_w.on){
+    var wg=$i('wGate');
+    if(wg){wg.style.display='block';wg.scrollIntoView({behavior:'smooth',block:'nearest'})}
+    toast('Connect OPWallet to start uploading','w');
+    return;
+  }
+
   var added=0;
   imgs.forEach(function(f){
     if(f.size>MB*1024*1024){toast(esc(f.name.slice(0,16))+' skipped (>'+MB+'MB)','w');return}
-    // BATCH LIMIT — 50 free, unlimited after payment
+    // BATCH LIMIT — 50 free per wallet address, unlimited after payment
     var current=_f.filter(Boolean).length;
-    if(!_batchUnlocked&&current>=FREE_LIMIT){
-      // Show payment gate
+    var used=getFreeUsed();
+    if(!_batchUnlocked&&(current>=FREE_LIMIT||used>=FREE_LIMIT)){
       var bg=$i('batchGate');
       if(bg){bg.style.display='block';bg.scrollIntoView({behavior:'smooth',block:'nearest'})}
-      toast('Free limit is '+FREE_LIMIT+' images — get a Batch Pass to continue','w');
+      toast('Free limit reached — get a Batch Pass to continue','w');
       return;
     }
     if(_batchUnlocked&&current>=MF){toast('Max '+MF+' files per session','w');return}
     if(_f.some(function(x){return x&&x.name===f.name&&x.size===f.size}))return;
     var idx=_f.length;_f.push(f);_r.push(null);rI(idx,f);added++;
+    // Track free usage in localStorage
+    if(!_batchUnlocked) incFreeUsed();
   });
   if(added){updS();var bs=$i('bSq');if(bs)bs.disabled=false}
 }
@@ -842,7 +868,16 @@ function rmI(idx){
     var ifl=$i('inscribeFlow');if(ifl)ifl.style.display='none';
   }
 }
-function clr(){_f=[];_r=[];var q=$i('queue');if(q)q.innerHTML='';['bSq','bDl','bSg'].forEach(function(id){var e=$i(id);if(e)e.disabled=true});tC('oc','on',false);tC('txb','on',false);cC();updS();rvC();var ifl=$i('inscribeFlow');if(ifl)ifl.style.display='none';var wg=$i('wGate');if(wg)wg.style.display='none';var bg=$i('batchGate');if(bg&&!_batchUnlocked)bg.style.display='none'}
+function clr(){
+  _f=[];_r=[];
+  var q=$i('queue');if(q)q.innerHTML='';
+  ['bSq','bDl','bSg'].forEach(function(id){var e=$i(id);if(e)e.disabled=true});
+  tC('oc','on',false);tC('txb','on',false);cC();updS();rvC();
+  var ifl=$i('inscribeFlow');if(ifl)ifl.style.display='none';
+  var wg=$i('wGate');if(wg)wg.style.display='none';
+  var bg=$i('batchGate');if(bg&&!_batchUnlocked)bg.style.display='none';
+  updDzText();
+}
 
 /* compression */
 async function sqAll(){
@@ -1057,14 +1092,20 @@ async function verifyPayment(){
     if(!confirmed){
       showVerifyStatus('TX found but not yet confirmed — wait for 1 confirmation and try again','warn');return;
     }
-    // PAYMENT VERIFIED
+    // PAYMENT VERIFIED — save to localStorage tied to wallet address
     _batchUnlocked=true;
+    try{
+      localStorage.setItem('ss_pass',JSON.stringify({
+        addr:_w.addr||'unknown',
+        txid:txid,
+        net:_net,
+        ts:Date.now()
+      }));
+    }catch(e){/* localStorage unavailable — pass still works for session */}
     var bg=$i('batchGate');if(bg)bg.style.display='none';
     showVerifyStatus('','ok');
     toast('Batch Pass unlocked — unlimited images ready','ok');
-    // Update dropzone text
-    var dzs=document.querySelector('.dz-s');
-    if(dzs)dzs.innerHTML='JPG · PNG · WebP · GIF — any size<br><strong style="color:var(--ok)">Batch Pass active — unlimited images</strong><br>Click any thumbnail after squeezing to compare';
+    activateBatchPass();
   }catch(e){
     var msg=(e&&e.message)?String(e.message):'';
     if(msg.indexOf('abort')!==-1||msg.indexOf('timeout')!==-1){
@@ -1073,6 +1114,69 @@ async function verifyPayment(){
       showVerifyStatus('Verification error — try again','bad');
     }
   }
+}
+
+/* free usage tracking — tied to wallet address in localStorage */
+function getFreeKey(){return 'ss_free_'+(_w.addr||'anon')+'_'+_net}
+function getFreeUsed(){
+  try{var v=parseInt(localStorage.getItem(getFreeKey())||'0',10);return isNaN(v)?0:v}
+  catch(e){return 0}
+}
+function incFreeUsed(){
+  try{localStorage.setItem(getFreeKey(),String(getFreeUsed()+1))}catch(e){}
+}
+function getFreeSlotsLeft(){return Math.max(0,FREE_LIMIT-getFreeUsed())}
+
+/* update dropzone sub-text to show slots remaining */
+function updDzText(){
+  var dzs=document.querySelector('.dz-s');if(!dzs)return;
+  if(_batchUnlocked){
+    dzs.innerHTML='JPG · PNG · WebP · GIF — any size<br><strong style="color:var(--ok)">Batch Pass active — unlimited images</strong><br>Click any thumbnail after squeezing to compare';
+  } else if(_w.on){
+    var left=getFreeSlotsLeft();
+    var col=left>10?'var(--ok)':left>0?'var(--yw)':'var(--er)';
+    dzs.innerHTML='JPG · PNG · WebP · GIF — any size<br><strong style="color:'+col+'">'+left+' free images remaining</strong> · Unlimited with Batch Pass<br>Click any thumbnail after squeezing to compare';
+  } else {
+    dzs.innerHTML='JPG · PNG · WebP · GIF — any size<br><strong style="color:var(--s)">Connect OPWallet to start</strong> — 50 free images per wallet<br>Click any thumbnail after squeezing to compare';
+  }
+}
+function activateBatchPass(){
+  _batchUnlocked=true;
+  var bg=$i('batchGate');if(bg)bg.style.display='none';
+  updDzText();
+  var wnb=$i('wnb');
+  if(wnb&&_w.on) wnb.textContent=(_net==='t'?'TESTNET':'MAINNET')+' · PASS';
+}
+
+/* check localStorage for existing valid pass when wallet connects */
+async function checkStoredPass(addr){
+  try{
+    var raw=localStorage.getItem('ss_pass');
+    if(!raw)return;
+    var saved=JSON.parse(raw);
+    // Must match connected wallet address and same network
+    if(!saved||saved.addr!==addr||saved.net!==_net)return;
+    // Must have a valid txid format
+    if(!saved.txid||!/^[0-9a-fA-F]{64}$/.test(saved.txid))return;
+    // Silently re-verify TX on mempool to confirm it's still valid
+    var apiUrl=getMempoolAPI(saved.txid);
+    var res=await fetch(apiUrl,{method:'GET',headers:{'Accept':'application/json'},
+      signal:AbortSignal.timeout?AbortSignal.timeout(8000):undefined});
+    if(!res.ok)return;
+    var tx=await res.json();
+    if(!tx||!tx.vout||!Array.isArray(tx.vout))return;
+    var confirmed=tx.status&&tx.status.confirmed;
+    if(!confirmed)return;
+    var targetAddr=getPayAddr();
+    var requiredSats=getPassSats();
+    var valid=tx.vout.some(function(out){
+      return out&&out.scriptpubkey_address===targetAddr&&out.value>=requiredSats;
+    });
+    if(!valid)return;
+    // All checks passed — restore pass silently
+    activateBatchPass();
+    toast('Batch Pass restored — unlimited images active','ok');
+  }catch(e){/* silent fail — user just won't be auto-unlocked */}
 }
 
 function showVerifyStatus(msg,type){
@@ -1092,6 +1196,7 @@ function showVerifyStatus(msg,type){
   document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.target.tagName==='INPUT')e.preventDefault()});
   sp(60);
   updBatchGate();
+  updDzText();
 })();
 </script>
 </body>
