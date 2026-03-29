@@ -340,8 +340,7 @@ footer a:hover{text-decoration:underline}
 <!-- NETBAR -->
 <div class="nb m" id="nb">
   <span class="ndot"></span>
-  <span id="nbl">MAINNET · Real Bitcoin · Real satoshis</span>
-  <button class="nsw" onclick="swNet()" type="button" id="nsw">Switch to Testnet</button>
+  <span id="nbl">MAINNET · Bitcoin L1 · Real satoshis</span>
 </div>
 
 <!-- NAV -->
@@ -509,40 +508,18 @@ footer a:hover{text-decoration:underline}
   </div>
 </div>
 
-<!-- BATCH PASS GATE — shows when user tries to add more than 50 images -->
+<!-- BATCH LIMIT GATE — upgrade prompt -->
 <div id="batchGate" style="display:none;animation:fd .3s ease">
-  <div style="background:linear-gradient(135deg,rgba(247,147,26,.07),rgba(247,147,26,.015));border:2px solid rgba(247,147,26,.25);border-radius:var(--r);padding:22px;margin-bottom:12px">
-    <div style="font-family:var(--m);font-size:.62rem;color:var(--s);letter-spacing:2px;margin-bottom:10px">// BATCH PASS REQUIRED</div>
-    <div style="font-size:.96rem;font-weight:800;margin-bottom:8px;color:var(--t0)">Unlimited Batch — <span id="passPrice">10,000 sats</span></div>
-    <div style="font-size:.76rem;color:var(--t1);line-height:1.65;margin-bottom:18px">You have reached the 50 image free limit. Unlock unlimited batch compression with a one-time payment of <strong style="color:var(--s)" id="passPriceInline">10,000 sats</strong> to the SatSqueeze wallet. Payment is verified on-chain via the Bitcoin mempool — no fake TX IDs can pass.</div>
-    <!-- Payment address -->
-    <div style="font-family:var(--m);font-size:.6rem;color:var(--t2);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase">Send exactly <span id="passPriceLabel">10,000 sats</span> to:</div>
-    <div id="payAddr" style="font-family:var(--m);font-size:.68rem;color:var(--s);background:var(--b0);border:1px solid var(--d2);border-radius:var(--r2);padding:11px 14px;margin-bottom:14px;word-break:break-all;cursor:pointer;transition:border-color .15s" onclick="copyAddr()" title="Click to copy">
-      bc1qm0gghvsguclnwtjf73t4zauf4yy89q74x3jtpp
-      <span style="font-size:.55rem;color:var(--t2);margin-left:8px">[click to copy]</span>
-    </div>
-
-    <!-- TX verification -->
-    <div style="font-family:var(--m);font-size:.6rem;color:var(--t2);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase">After sending, paste your Transaction ID:</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-      <input type="text" id="txInput" placeholder="Paste Bitcoin TX ID here..."
-        style="flex:1;min-width:200px;background:var(--b2);border:1px solid var(--d2);border-radius:var(--r2);
-        color:var(--t0);font-family:var(--m);font-size:.72rem;padding:10px 12px;outline:none;
-        transition:border-color .15s" onfocus="this.style.borderColor='var(--s)'" onblur="this.style.borderColor='var(--d2)'">
-      <button onclick="verifyPayment()" type="button"
-        style="background:var(--s);color:#000;font-family:var(--m);font-size:.7rem;font-weight:700;
-        letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border:none;
-        border-radius:var(--r2);cursor:pointer;white-space:nowrap;transition:background .15s">
-        Verify on Bitcoin
-      </button>
-    </div>
-
-    <!-- Verification status -->
-    <div id="verifyStatus" style="font-family:var(--m);font-size:.68rem;padding:8px 12px;border-radius:var(--r2);display:none"></div>
-
-    <div style="font-family:var(--m);font-size:.58rem;color:var(--t2);margin-top:12px;line-height:1.65;border-top:1px solid var(--d1);padding-top:12px">
-      Payment is verified directly on the Bitcoin blockchain via mempool.space. A real confirmed transaction to the SatSqueeze address is required — no other TX will pass. Your Batch Pass unlocks unlimited images for this session.
-    </div>
+  <div style="background:linear-gradient(135deg,rgba(247,147,26,.06),rgba(247,147,26,.01));border:1px solid rgba(247,147,26,.2);border-radius:var(--r);padding:20px;margin-bottom:12px;text-align:center">
+    <div style="font-family:var(--m);font-size:.62rem;color:var(--s);letter-spacing:2px;margin-bottom:10px">// FREE LIMIT REACHED</div>
+    <div style="font-size:.96rem;font-weight:800;margin-bottom:8px;color:var(--t0)">50 Image Free Limit</div>
+    <div style="font-size:.76rem;color:var(--t1);line-height:1.65;margin-bottom:16px;max-width:480px;margin-left:auto;margin-right:auto">You have used your 50 free images for this wallet. Unlimited batch compression is coming soon — follow <a href="https://x.com/opnetbtc" target="_blank" rel="noopener" style="color:var(--s)">@opnetbtc</a> for updates. For now, clear your queue and start a new session.</div>
+    <button onclick="clr()" type="button"
+      style="background:var(--s);color:#000;font-family:var(--m);font-size:.72rem;font-weight:700;
+      letter-spacing:1.5px;text-transform:uppercase;padding:13px 28px;border:none;
+      border-radius:var(--r);cursor:pointer;margin-right:8px">
+      Clear Queue
+    </button>
   </div>
 </div>
 <div class="oc" id="oc">
@@ -636,12 +613,44 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <div class="hr" style="margin-top:18px"></div>
+
+<!-- DONATE -->
+<div style="background:linear-gradient(135deg,rgba(247,147,26,.04),rgba(247,147,26,.01));border:1px solid rgba(247,147,26,.12);border-radius:var(--r);padding:22px;margin:18px 0;text-align:center">
+  <div style="font-family:var(--m);font-size:.6rem;color:var(--s);letter-spacing:2px;margin-bottom:10px">// SUPPORT SATSQUEEZE</div>
+  <div style="font-size:.96rem;font-weight:800;margin-bottom:8px;color:var(--t0)">SatSqueeze is Free</div>
+  <div style="font-size:.75rem;color:var(--t1);line-height:1.65;max-width:480px;margin:0 auto 18px">Built on OP_NET Bitcoin L1. No ads, no tracking, no fees. If SatSqueeze saved you sats on your inscriptions, consider sending a few back. Every sat appreciated.</div>
+
+  <!-- BTC Address -->
+  <div style="font-family:var(--m);font-size:.6rem;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Send any amount of sats to:</div>
+  <div onclick="copyDonate()" title="Click to copy"
+    style="font-family:var(--m);font-size:.7rem;color:var(--s);background:var(--b0);
+    border:1px solid var(--d2);border-radius:var(--r2);padding:12px 16px;
+    margin:0 auto 12px;max-width:540px;word-break:break-all;cursor:pointer;
+    transition:border-color .15s;display:block">
+    bc1qm0gghvsguclnwtjf73t4zauf4yy89q74x3jtpp
+    <span style="font-size:.55rem;color:var(--t2);margin-left:8px">[click to copy]</span>
+  </div>
+
+  <!-- Quick amounts -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:14px">
+    <span style="font-family:var(--m);font-size:.62rem;color:var(--t2)">Quick amounts:</span>
+    <button onclick="copyDonate(1000)"  type="button" style="background:var(--b2);border:1px solid var(--d2);color:var(--t1);font-family:var(--m);font-size:.62rem;padding:4px 12px;border-radius:100px;cursor:pointer;transition:all .13s" onmouseover="this.style.borderColor='var(--s)';this.style.color='var(--s)'" onmouseout="this.style.borderColor='var(--d2)';this.style.color='var(--t1)'">1,000 sats</button>
+    <button onclick="copyDonate(5000)"  type="button" style="background:var(--b2);border:1px solid var(--d2);color:var(--t1);font-family:var(--m);font-size:.62rem;padding:4px 12px;border-radius:100px;cursor:pointer;transition:all .13s" onmouseover="this.style.borderColor='var(--s)';this.style.color='var(--s)'" onmouseout="this.style.borderColor='var(--d2)';this.style.color='var(--t1)'">5,000 sats</button>
+    <button onclick="copyDonate(10000)" type="button" style="background:var(--b2);border:1px solid var(--d2);color:var(--t1);font-family:var(--m);font-size:.62rem;padding:4px 12px;border-radius:100px;cursor:pointer;transition:all .13s" onmouseover="this.style.borderColor='var(--s)';this.style.color='var(--s)'" onmouseout="this.style.borderColor='var(--d2)';this.style.color='var(--t1)'">10,000 sats</button>
+    <button onclick="copyDonate(50000)" type="button" style="background:var(--b2);border:1px solid var(--d2);color:var(--t1);font-family:var(--m);font-size:.62rem;padding:4px 12px;border-radius:100px;cursor:pointer;transition:all .13s" onmouseover="this.style.borderColor='var(--s)';this.style.color='var(--s)'" onmouseout="this.style.borderColor='var(--d2)';this.style.color='var(--t1)'">50,000 sats</button>
+  </div>
+
+  <div style="font-family:var(--m);font-size:.58rem;color:var(--t2);line-height:1.6">
+    Bitcoin address · Taproot P2WPKH · Mainnet only<br>
+    Click address or any amount button to copy — then send from OPWallet or any Bitcoin wallet
+  </div>
+</div>
+
 <footer>
   <div class="fl">
     <a class="fb" href="https://opnet.org"           target="_blank" rel="noopener">₿ OP_NET</a>
     <a class="fb" href="https://vibecode.finance"    target="_blank" rel="noopener">vibecode.finance</a>
     <a class="fb" href="https://opscan.org"          target="_blank" rel="noopener">OPScan</a>
-    <a class="fb" href="https://faucet.opnet.org"    target="_blank" rel="noopener">Testnet Faucet</a>
     <a class="fb" href="https://docs.opnet.org"      target="_blank" rel="noopener">OP_NET Docs</a>
     <a class="fb" href="https://chromewebstore.google.com/detail/opwallet/pmbjpcmaaladnfpacpmhmnfmpklgbdjb" target="_blank" rel="noopener">OPWallet</a>
   </div>
@@ -664,17 +673,6 @@ footer a:hover{text-decoration:underline}
   </div>
 </div>
 
-<!-- MODAL: Mainnet warning -->
-<div class="mbg" id="m2">
-  <div class="md">
-    <h3>⚠ Switch to Mainnet?</h3>
-    <p>Mainnet uses <strong>real satoshis</strong>. Make sure OPWallet is also set to Mainnet. Only proceed after testing on Regtest.</p>
-    <div class="mdb">
-      <button class="btn-p" onclick="confMain()" type="button">Switch to Mainnet</button>
-      <button class="btn-s" onclick="cM('m2')"   type="button">Stay on Testnet</button>
-    </div>
-  </div>
-</div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -688,17 +686,8 @@ footer a:hover{text-decoration:underline}
 var VER='8.0.0', MB=150, MF=100, IT=16, QMN=.01, QTH=.006;
 var BMS=60000, TMS=2800, SVB=10, OVH=200;
 var FREE_LIMIT=50;
-var PASS_SATS=400;        // TEST — change to 10000 before final launch
-var PASS_SATS_TEST=1;    // testnet = free
-var PAY_ADDR_MAIN='bc1qm0gghvsguclnwtjf73t4zauf4yy89q74x3jtpp';
-var PAY_ADDR_TEST='bcrt1pfcjlz3r7rvykpmg6gkmm6rfutyk0hz5vkvfqu04d6k9sn356z36s6sr9tp';
-// dynamic helpers
-function getPayAddr(){return _net==='t'?PAY_ADDR_TEST:PAY_ADDR_MAIN}
-function getPassSats(){return _net==='t'?PASS_SATS_TEST:PASS_SATS}
-function getMempoolAPI(txid){return _net==='t'?'https://mempool.space/testnet/api/tx/'+txid:'https://mempool.space/api/tx/'+txid}
 var _f=[],_r=[],_w={on:false,addr:null,bal:null};
-var _net='m',_sq=false,_cu=[],_tt=null;
-var _batchUnlocked=false;                       // true after payment verified
+var _sq=false,_cu=[],_tt=null;
 
 function $i(i){try{return document.getElementById(i)}catch(e){return null}}
 function sT(i,v){var e=$i(i);if(e)e.textContent=String(v)}
@@ -707,33 +696,12 @@ function tC(i,c,f){var e=$i(i);if(e)e.classList.toggle(c,!!f)}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function sfn(s){return String(s).replace(/\.\./g,'').replace(/[^a-zA-Z0-9_.\-]/g,'_').slice(0,60)}
 
-/* network */
-function swNet(){if(_net==='t'){var m=$i('m2');if(m)m.classList.add('on')}else{apN('t')}}
-function confMain(){cM('m2');apN('m')}
-function apN(n){
-  _net=n;var t=n==='t';
-  var nb=$i('nb');if(nb)nb.className='nb '+(t?'t':'m');
-  sT('nbl',t?'TESTNET · Regtest · No real sats at risk':'MAINNET · Real Bitcoin · Real satoshis');
-  sT('nsw',t?'Switch to Mainnet':'Switch to Testnet');
-  var oc=$i('ocn');if(oc){oc.className='ocn '+(t?'t':'m');oc.textContent=t?'TESTNET · Regtest tBTC — no real satoshis at risk':'MAINNET · Real satoshis. Sign carefully.'}
-  var wb=$i('wnb');if(wb){wb.className='wnb '+(t?'t':'m');wb.textContent=t?'TESTNET':'MAINNET'}
-  tC('txb','on',false);toast(t?'Switched to Testnet':'Switched to Mainnet','w');
-  // Always reset batch unlock on network switch — pass is network-specific
-  _batchUnlocked=false;
-  updDzText();
-  updBatchGate();
-  fbk();
-  // Testnet only — auto-unlock batch pass for free testing
-  if(t){activateBatchPass();toast('Testnet: Batch Pass unlocked for testing','ok');}
-}
-
-/* block ticker — uses correct network endpoint */
+/* block ticker — mainnet */
 function fbk(){
   var ctrl=null,tmr=null;
-  var url=_net==='t'?'https://mempool.space/testnet/api/blocks/tip/height':'https://mempool.space/api/blocks/tip/height';
   try{
     if(typeof AbortController!=='undefined'){ctrl=new AbortController();tmr=setTimeout(function(){ctrl.abort()},8000)}
-    fetch(url,{method:'GET',headers:{'Accept':'text/plain'},signal:ctrl?ctrl.signal:undefined})
+    fetch('https://mempool.space/api/blocks/tip/height',{method:'GET',headers:{'Accept':'text/plain'},signal:ctrl?ctrl.signal:undefined})
       .then(function(r){if(tmr)clearTimeout(tmr);if(!r.ok)return;return r.text()})
       .then(function(t){if(t){var n=parseInt(t.trim(),10);if(!isNaN(n)&&n>0)sT('bnum',n.toLocaleString())}})
       .catch(function(){if(tmr)clearTimeout(tmr)});
@@ -767,10 +735,7 @@ async function cW(){
     var wg=$i('wGate');if(wg)wg.style.display='none';
     if(_r.some(function(r){return r!==null})){var bs=$i('bSg');if(bs)bs.disabled=false}
     toast('OPWallet connected · Taproot P2TR · Ready to download','ok');
-    // Update dropzone to show free slots remaining
     updDzText();
-    // Check if this wallet already has a valid Batch Pass stored
-    checkStoredPass(addr);
   }catch(e){
     var msg=(e&&e.message)?String(e.message):'';var lw=msg.toLowerCase();
     toast(e&&e.code===4001||lw.indexOf('reject')!==-1||lw.indexOf('denied')!==-1||lw.indexOf('cancel')!==-1?'Wallet connection rejected':'Wallet error — is OPWallet unlocked?','bad');
@@ -778,7 +743,6 @@ async function cW(){
 }
 function dcW(){
   _w={on:false,addr:null,bal:null};
-  _batchUnlocked=false;  // re-lock on disconnect — must reconnect to restore pass
   tC('wp','on',false);tC('wd','on',false);
   sT('wbt','Connect OPWallet');tC('wb','on',false);
   var bs=$i('bSg');if(bs)bs.disabled=true;
@@ -789,8 +753,8 @@ function trA(a,n){n=Math.max(4,n||8);if(!a)return'—';if(a.length<=n+6)return a
 
 /* modals */
 function cM(id){var m=$i(id);if(m)m.classList.remove('on')}
-['m1','m2'].forEach(function(id){var e=$i(id);if(!e)return;e.addEventListener('click',function(ev){if(ev.target===e)cM(id)})})
-document.addEventListener('keydown',function(e){if(e.key==='Escape')['m1','m2'].forEach(cM)})
+var _m1=$i('m1');if(_m1)_m1.addEventListener('click',function(ev){if(ev.target===_m1)cM('m1')})
+document.addEventListener('keydown',function(e){if(e.key==='Escape')cM('m1')})
 
 /* file handling */
 var dz=$i('dz'),fi=$i('fi');
@@ -819,22 +783,19 @@ function aF(arr){
   var added=0;
   imgs.forEach(function(f){
     if(f.size>MB*1024*1024){toast(esc(f.name.slice(0,16))+' skipped (>'+MB+'MB)','w');return}
-    // BATCH LIMIT — 50 free per wallet address, unlimited after payment
     var current=_f.filter(Boolean).length;
     var used=getFreeUsed();
-    if(!_batchUnlocked&&(current>=FREE_LIMIT||used>=FREE_LIMIT)){
+    if(current>=FREE_LIMIT||used>=FREE_LIMIT){
       var bg=$i('batchGate');
       if(bg){bg.style.display='block';bg.scrollIntoView({behavior:'smooth',block:'nearest'})}
-      toast('Free limit reached — get a Batch Pass to continue','w');
+      toast('50 image free limit reached for this wallet','w');
       return;
     }
-    if(_batchUnlocked&&current>=MF){toast('Max '+MF+' files per session','w');return}
     if(_f.some(function(x){return x&&x.name===f.name&&x.size===f.size}))return;
     var idx=_f.length;_f.push(f);_r.push(null);rI(idx,f);added++;
-    // Track free usage in localStorage
-    if(!_batchUnlocked) incFreeUsed();
+    incFreeUsed();
   });
-  if(added){updS();var bs=$i('bSq');if(bs)bs.disabled=false}
+  if(added){updS();updDzText();var bs=$i('bSq');if(bs)bs.disabled=false}
 }
 
 function rI(idx,file){
@@ -880,7 +841,7 @@ function clr(){
   tC('oc','on',false);tC('txb','on',false);cC();updS();rvC();
   var ifl=$i('inscribeFlow');if(ifl)ifl.style.display='none';
   var wg=$i('wGate');if(wg)wg.style.display='none';
-  var bg=$i('batchGate');if(bg&&!_batchUnlocked)bg.style.display='none';
+  var bg=$i('batchGate');if(bg)bg.style.display='none';
   updDzText();
 }
 
@@ -965,7 +926,7 @@ async function bldR(){
   var svb=oT-cT,svs=Math.round(svb*SVB);
   var hash='—';
   try{var raw=done.map(function(r){return r.name+':'+r.blob.size}).join('|');var enc=new TextEncoder().encode(raw);var buf=await crypto.subtle.digest('SHA-256',enc);hash=Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('').slice(0,32)+'…'}catch(e){hash='unavailable'}
-  sH('rc','<span>SHA256:</span> '+esc(hash)+'<br><span>NETWORK:</span> '+esc(_net==='t'?'TESTNET':'MAINNET')+' · <span>FILES:</span> '+done.length+' · <span>ORIGINAL:</span> '+esc(fB(oT))+' → <span>SQUEEZED:</span> '+esc(fB(cT))+' · <span>BYTES SAVED:</span> '+esc(fB(svb))+' · <span>EST. SATS SAVED:</span> ~'+esc(nF(Math.max(0,svs)))+' sats');
+  sH('rc','<span>SHA256:</span> '+esc(hash)+'<br><span>NETWORK:</span> MAINNET · <span>FILES:</span> '+done.length+' · <span>ORIGINAL:</span> '+esc(fB(oT))+' → <span>SQUEEZED:</span> '+esc(fB(cT))+' · <span>BYTES SAVED:</span> '+esc(fB(svb))+' · <span>EST. SATS SAVED:</span> ~'+esc(nF(Math.max(0,svs)))+' sats');
 }
 async function sign(){
   if(!_w.on){toast('Connect OPWallet first','bad');return}
@@ -974,11 +935,11 @@ async function sign(){
     var done=_r.filter(Boolean);
     var oT=done.reduce(function(s,r){return s+r.orig.size},0);
     var cT=done.reduce(function(s,r){return s+r.blob.size},0);
-    var msg=JSON.stringify({app:'SatSqueeze',version:VER,network:_net,files:done.length,original:oT,compressed:cT,bytes_saved:oT-cT,est_sats_saved:Math.round((oT-cT)*SVB),ts:Date.now(),addr:_w.addr});
+    var msg=JSON.stringify({app:'SatSqueeze',version:VER,network:'mainnet',files:done.length,original:oT,compressed:cT,bytes_saved:oT-cT,est_sats_saved:Math.round((oT-cT)*SVB),ts:Date.now(),addr:_w.addr});
     var p=gP(),proof=null;
     if(p&&typeof p.signMessage==='function'){var sig=await p.signMessage(msg);proof=typeof sig==='string'&&sig.length>0?sig.slice(0,28)+'…':'signed:'+Date.now().toString(36).toUpperCase()}
     else{proof='local:'+Date.now().toString(36).toUpperCase();toast('Wallet does not support signMessage — local receipt','w')}
-    var bn=$i('bnum');sT('txp',proof||'—');sT('txbl',bn?bn.textContent:'—');sT('txn',_net==='t'?'TESTNET (Regtest)':'MAINNET');tC('txb','on',true);btn.textContent='✓ Receipt Signed';toast('✓ Receipt signed on Bitcoin L1','ok');
+    var bn=$i('bnum');sT('txp',proof||'—');sT('txbl',bn?bn.textContent:'—');sT('txn','MAINNET');tC('txb','on',true);btn.textContent='Receipt Signed';toast('Receipt signed on Bitcoin L1','ok');
   }catch(e){
     if(btn){btn.disabled=false;btn.textContent='// Sign Receipt on Bitcoin L1'}
     var msg2=(e&&e.message)?String(e.message):'';var lw=msg2.toLowerCase();
@@ -1036,93 +997,18 @@ function toast(msg,type){var t=$i('toast');if(!t)return;t.textContent=String(msg
 function tS(id){var s=$i(id);if(!s)return;var b=s.querySelector('.ib'),h=s.querySelector('.ih');var op=s.classList.contains('op');s.classList.toggle('op',!op);if(h)h.setAttribute('aria-expanded',String(!op));if(b)b.classList.toggle('on',!op)}
 function tF(el){if(!el)return;var a=el.querySelector('.fa'),op=el.classList.contains('op');el.classList.toggle('op',!op);if(a)a.classList.toggle('on',!op)}
 
-/* batch pass — copy address */
-function copyAddr(){
-  var addr=getPayAddr();
+
+/* donate — copy address */
+function copyDonate(sats){
+  var addr='bc1qm0gghvsguclnwtjf73t4zauf4yy89q74x3jtpp';
+  var msg=sats?'Copy: send '+sats.toLocaleString()+' sats to '+addr.slice(0,12)+'…':'Address copied';
   try{
-    navigator.clipboard.writeText(addr).then(function(){
-      toast('Address copied','ok');
-    }).catch(function(){toast(addr,'ok')});
+    navigator.clipboard.writeText(addr).then(function(){toast(msg,'ok')}).catch(function(){toast(addr,'ok')});
   }catch(e){toast(addr,'ok')}
 }
 
-/* update batch gate UI when network switches */
-function updBatchGate(){
-  var addr=getPayAddr();
-  var sats=getPassSats().toLocaleString()+' sats';
-  var pa=$i('payAddr');
-  if(pa)pa.innerHTML=addr+'<span style="font-size:.55rem;color:var(--t2);margin-left:8px">[click to copy]</span>';
-  ['passPrice','passPriceInline','passPriceLabel'].forEach(function(id){sT(id,sats)});
-}
-
-/* batch pass — verify payment on Bitcoin mempool */
-async function verifyPayment(){
-  var inp=$i('txInput');
-  var stat=$i('verifyStatus');
-  if(!inp||!stat)return;
-  var txid=inp.value.trim().replace(/\s/g,'');
-  if(!txid||txid.length<60||txid.length>65){
-    showVerifyStatus('Invalid TX ID — Bitcoin TX IDs are 64 hex characters','bad');return;
-  }
-  // Basic hex check
-  if(!/^[0-9a-fA-F]{64}$/.test(txid)){
-    showVerifyStatus('Invalid TX ID — must be 64 hex characters (0-9, a-f)','bad');return;
-  }
-  showVerifyStatus('Checking Bitcoin mempool…','info');
-  try{
-    var apiUrl=getMempoolAPI(txid);
-    var res=await fetch(apiUrl,{
-      method:'GET',headers:{'Accept':'application/json'},
-      signal:AbortSignal.timeout?AbortSignal.timeout(10000):undefined
-    });
-    if(!res.ok){
-      showVerifyStatus('TX not found — check the ID and make sure you are on the right network','bad');return;
-    }
-    var tx=await res.json();
-    if(!tx||!tx.vout||!Array.isArray(tx.vout)){
-      showVerifyStatus('Could not read TX data — try again','bad');return;
-    }
-    var confirmed=tx.status&&tx.status.confirmed;
-    var targetAddr=getPayAddr();
-    var requiredSats=getPassSats();
-    var found=false;
-    tx.vout.forEach(function(out){
-      if(out&&out.scriptpubkey_address===targetAddr&&out.value>=requiredSats){
-        found=true;
-      }
-    });
-    if(!found){
-      showVerifyStatus('Payment not found — TX must send at least '+requiredSats.toLocaleString()+' sats to the SatSqueeze address on '+(_net==='t'?'Regtest':'Mainnet'),'bad');return;
-    }
-    if(!confirmed){
-      showVerifyStatus('TX found but not yet confirmed — wait for 1 confirmation and try again','warn');return;
-    }
-    // PAYMENT VERIFIED — save to localStorage tied to wallet address
-    _batchUnlocked=true;
-    try{
-      localStorage.setItem('ss_pass',JSON.stringify({
-        addr:_w.addr||'unknown',
-        txid:txid,
-        net:_net,
-        ts:Date.now()
-      }));
-    }catch(e){/* localStorage unavailable — pass still works for session */}
-    var bg=$i('batchGate');if(bg)bg.style.display='none';
-    showVerifyStatus('','ok');
-    toast('Batch Pass unlocked — unlimited images ready','ok');
-    activateBatchPass();
-  }catch(e){
-    var msg=(e&&e.message)?String(e.message):'';
-    if(msg.indexOf('abort')!==-1||msg.indexOf('timeout')!==-1){
-      showVerifyStatus('Request timed out — check your connection and try again','bad');
-    } else {
-      showVerifyStatus('Verification error — try again','bad');
-    }
-  }
-}
-
 /* free usage tracking — tied to wallet address in localStorage */
-function getFreeKey(){return 'ss_free_'+(_w.addr||'anon')+'_'+_net}
+function getFreeKey(){return 'ss_free_'+(_w.addr||'anon')}
 function getFreeUsed(){
   try{var v=parseInt(localStorage.getItem(getFreeKey())||'0',10);return isNaN(v)?0:v}
   catch(e){return 0}
@@ -1132,75 +1018,23 @@ function incFreeUsed(){
 }
 function getFreeSlotsLeft(){return Math.max(0,FREE_LIMIT-getFreeUsed())}
 
-/* update dropzone sub-text to show slots remaining */
+/* update dropzone text */
 function updDzText(){
   var dzs=document.querySelector('.dz-s');if(!dzs)return;
-  if(_batchUnlocked){
-    dzs.innerHTML='JPG · PNG · WebP · GIF — any size<br><strong style="color:var(--ok)">Batch Pass active — unlimited images</strong><br>Click any thumbnail after squeezing to compare';
-  } else if(_w.on){
+  if(!_w.on){
+    dzs.innerHTML='JPG · PNG · WebP · GIF — any size<br><strong style="color:var(--s)">Connect OPWallet to start</strong> — 50 free images per wallet<br>Click any thumbnail after squeezing to compare';
+  } else {
     var left=getFreeSlotsLeft();
     var col=left>10?'var(--ok)':left>0?'var(--yw)':'var(--er)';
-    dzs.innerHTML='JPG · PNG · WebP · GIF — any size<br><strong style="color:'+col+'">'+left+' free images remaining</strong> · Unlimited with Batch Pass<br>Click any thumbnail after squeezing to compare';
-  } else {
-    dzs.innerHTML='JPG · PNG · WebP · GIF — any size<br><strong style="color:var(--s)">Connect OPWallet to start</strong> — 50 free images per wallet<br>Click any thumbnail after squeezing to compare';
+    dzs.innerHTML='JPG · PNG · WebP · GIF — any size<br><strong style="color:'+col+'">'+left+' free images remaining</strong> for this wallet<br>Click any thumbnail after squeezing to compare';
   }
 }
-function activateBatchPass(){
-  _batchUnlocked=true;
-  var bg=$i('batchGate');if(bg)bg.style.display='none';
-  updDzText();
-  var wnb=$i('wnb');
-  if(wnb&&_w.on) wnb.textContent=(_net==='t'?'TESTNET':'MAINNET')+' · PASS';
-}
 
-/* check localStorage for existing valid pass when wallet connects */
-async function checkStoredPass(addr){
-  try{
-    var raw=localStorage.getItem('ss_pass');
-    if(!raw)return;
-    var saved=JSON.parse(raw);
-    // Must match connected wallet address and same network
-    if(!saved||saved.addr!==addr||saved.net!==_net)return;
-    // Must have a valid txid format
-    if(!saved.txid||!/^[0-9a-fA-F]{64}$/.test(saved.txid))return;
-    // Silently re-verify TX on mempool to confirm it's still valid
-    var apiUrl=getMempoolAPI(saved.txid);
-    var res=await fetch(apiUrl,{method:'GET',headers:{'Accept':'application/json'},
-      signal:AbortSignal.timeout?AbortSignal.timeout(8000):undefined});
-    if(!res.ok)return;
-    var tx=await res.json();
-    if(!tx||!tx.vout||!Array.isArray(tx.vout))return;
-    var confirmed=tx.status&&tx.status.confirmed;
-    if(!confirmed)return;
-    var targetAddr=getPayAddr();
-    var requiredSats=getPassSats();
-    var valid=tx.vout.some(function(out){
-      return out&&out.scriptpubkey_address===targetAddr&&out.value>=requiredSats;
-    });
-    if(!valid)return;
-    // All checks passed — restore pass silently
-    activateBatchPass();
-    toast('Batch Pass restored — unlimited images active','ok');
-  }catch(e){/* silent fail — user just won't be auto-unlocked */}
-}
-
-function showVerifyStatus(msg,type){
-  var el=$i('verifyStatus');
-  if(!el)return;
-  if(!msg){el.style.display='none';return}
-  el.style.display='block';
-  el.textContent=msg;
-  var bg=type==='ok'?'rgba(63,184,95,.08)':type==='warn'?'rgba(219,168,32,.08)':'rgba(204,68,68,.08)';
-  var bc=type==='ok'?'rgba(63,184,95,.2)':type==='warn'?'rgba(219,168,32,.2)':'rgba(204,68,68,.2)';
-  var col=type==='ok'?'var(--ok)':type==='warn'?'var(--yw)':type==='info'?'var(--t1)':'var(--er)';
-  el.style.background=bg;el.style.border='1px solid '+bc;el.style.color=col;
-}
 (function(){
   var ke=$i('kb');
   if(ke){ke.addEventListener('blur',function(){var v=parseFloat(ke.value);if(isNaN(v)||v<1)ke.value=1;if(v>50000)ke.value=50000;updEst()})}
   document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.target.tagName==='INPUT')e.preventDefault()});
   sp(60);
-  updBatchGate();
   updDzText();
 })();
 </script>
