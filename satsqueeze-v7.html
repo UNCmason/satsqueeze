@@ -546,7 +546,7 @@ footer a:hover{text-decoration:underline}
     <div class="steps">
       <div class="step"><div class="sn">01 // UPLOAD</div><div class="st">Drop Your Images</div><div class="sb">Upload any format. Batch your whole collection. Zero bytes leave your device — 100% local processing.</div></div>
       <div class="step"><div class="sn">02 // SQUEEZE</div><div class="st">Hit Your Byte Target</div><div class="sb">Binary search finds the exact encoding quality to hit your KB. Pixel dimensions never change — only witness data size shrinks.</div></div>
-      <div class="step"><div class="sn">03 // INSCRIBE</div><div class="st">Deploy on Bitcoin L1</div><div class="sb">Download squeezed images and inscribe via OPWallet + OP_NET. Test free on Regtest, broadcast to Mainnet when ready.</div></div>
+      <div class="step"><div class="sn">03 // INSCRIBE</div><div class="st">Inscribe on Bitcoin L1</div><div class="sb">Download your squeezed images and inscribe them on Bitcoin L1 via gamma.io or unisat.io. Every byte saved with SatSqueeze is a sat you keep.</div></div>
     </div>
     <div class="hr"></div>
     <div style="background:var(--b2);border:1px solid var(--d1);border-radius:var(--r);padding:13px 15px">
@@ -573,12 +573,12 @@ footer a:hover{text-decoration:underline}
         </a>
         <a href="https://optools.org" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:var(--b2);border:1px solid var(--d2);border-radius:var(--r2);padding:12px 14px;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='var(--s)'" onmouseout="this.style.borderColor='var(--d2)'">
           <span style="font-size:1.4rem">₿</span>
-          <div><div style="font-size:.82rem;font-weight:700;color:var(--t0);margin-bottom:2px">optools.org — OP_NET Native</div><div style="font-family:var(--m);font-size:.62rem;color:var(--t2)">Official OP_NET utility platform. For deploying OP_721 NFT collections directly on Bitcoin L1 via OP_NET smart contracts.</div></div>
+          <div><div style="font-size:.82rem;font-weight:700;color:var(--t0);margin-bottom:2px">optools.org — OP_NET Native</div><div style="font-family:var(--m);font-size:.62rem;color:var(--t2)">Official OP_NET utility platform. For minting OP_721 NFT collections directly on Bitcoin L1 via OP_NET smart contracts.</div></div>
         </a>
       </div>
     </div></div>
     <div class="ds"><div class="dn">4</div><div><div class="dt">Why Compression Authenticity Matters</div><div class="db">When you inscribe a compressed image on Bitcoin, it lives there forever — unchanged, immutable. The on-chain receipt SatSqueeze can sign via OPWallet proves that your specific image, at its specific byte size, was processed at a specific Bitcoin block height. For collectors and creators, this is cryptographic proof of your work — especially useful for large collections where provenance and authenticity matter. No one can claim your squeezed image was altered after the fact.</div></div></div>
-    <div class="ds"><div class="dn">5</div><div><div class="dt">Verify on OPScan</div><div class="db">After inscribing, check your transaction on OPScan. Your inscription hash, block height, and wallet address are permanently recorded on Bitcoin L1.</div><div class="cb">👉  <em><a href="https://opscan.org" target="_blank" rel="noopener" style="color:var(--s)">https://opscan.org</a></em></div></div></div>
+    <div class="ds"><div class="dn">5</div><div><div class="dt">Verify on OPScan</div><div class="db">After inscribing, check your transaction on OPScan. Your inscription hash, block height, and wallet address are permanently recorded on Bitcoin L1.</div><div class="cb"><em><a href="https://opscan.org" target="_blank" rel="noopener" style="color:var(--s)">https://opscan.org</a></em></div></div></div>
     <div class="ds"><div class="dn">6</div><div><div class="dt">Your NFT Lives on Bitcoin Forever</div><div class="db">Secured by Bitcoin proof-of-work. No server can take it down. No company can delete it. Every byte you saved with SatSqueeze was a sat you kept. That's the whole point.</div></div></div>
   </div>
 </div>
@@ -604,7 +604,6 @@ footer a:hover{text-decoration:underline}
       <div class="fi"><div class="fq" onclick="tF(this.parentElement)">Do I need OPWallet to compress images? <span class="fc">+</span></div><div class="fa">No. Compression and download works with zero wallet, zero account. OPWallet is only needed for the optional on-chain receipt signature.</div></div>
       <div class="fi"><div class="fq" onclick="tF(this.parentElement)">Is SatSqueeze free to use? <span class="fc">+</span></div><div class="fa">Yes — currently free with no limits and no sign-up. This may change in future versions.</div></div>
       <div class="fi"><div class="fq" onclick="tF(this.parentElement)">What format is best for Bitcoin inscriptions? <span class="fc">+</span></div><div class="fa">WebP gives the best bytes-per-pixel ratio — recommended default. JPEG is universally compatible. PNG is lossless but ignores the KB target and is typically larger than WebP or JPEG at equal visual quality.</div></div>
-      <div class="fi"><div class="fq" onclick="tF(this.parentElement)">Is GitHub free? Does deploying cost money? <span class="fc">+</span></div><div class="fa">GitHub is completely free for public repositories. Vercel is free for personal projects (generous free tier). Netlify drop is free. You can get your dApp live at zero cost.</div></div>
       <div class="fi"><div class="fq" onclick="tF(this.parentElement)">What is OP_NET? <span class="fc">+</span></div><div class="fa">OP_NET enables smart contracts, tokens (OP_20), and NFT collections directly on Bitcoin L1 using Taproot witness data. No sidechain, no bridge. BTC is the gas token — all fees paid in satoshis. Mainnet launched March 2026.</div></div>
     </div>
   </div>
@@ -649,14 +648,13 @@ footer a:hover{text-decoration:underline}
 <footer>
   <div class="fl">
     <a class="fb" href="https://opnet.org"           target="_blank" rel="noopener">₿ OP_NET</a>
-    <a class="fb" href="https://vibecode.finance"    target="_blank" rel="noopener">vibecode.finance</a>
     <a class="fb" href="https://opscan.org"          target="_blank" rel="noopener">OPScan</a>
     <a class="fb" href="https://docs.opnet.org"      target="_blank" rel="noopener">OP_NET Docs</a>
     <a class="fb" href="https://chromewebstore.google.com/detail/opwallet/pmbjpcmaaladnfpacpmhmnfmpklgbdjb" target="_blank" rel="noopener">OPWallet</a>
   </div>
   <div>SatSqueeze — fewer bytes, fewer sats · Powered by <a href="https://opnet.org" target="_blank" rel="noopener">OP_NET</a> Bitcoin L1</div>
   <div>Images never leave your device · 100% client-side · No tracking · No ads</div>
-  <div style="margin-top:4px;font-size:.48rem;opacity:.32">* Sat estimate at 10 sat/vByte · actual fees vary · #satsqueeze · #opnetvibecode · © 2026</div>
+  <div style="margin-top:4px;font-size:.48rem;opacity:.32">* Sat estimate at 10 sat/vByte · actual fees vary · © 2026 SatSqueeze</div>
 </footer>
 
 </div>
